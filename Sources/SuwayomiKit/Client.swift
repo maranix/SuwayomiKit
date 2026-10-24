@@ -71,9 +71,9 @@ public struct SuwayomiClient: Sendable {
             if let url = URL(string: trimmed) {
                 return url
             }
-            if let encoded = trimmed.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
-                let url = URL(string: encoded)
-            {
+            if let encoded = trimmed.addingPercentEncoding(
+                withAllowedCharacters: .urlQueryAllowed
+            ), let url = URL(string: encoded) {
                 return url
             }
             return baseURL
@@ -88,9 +88,9 @@ public struct SuwayomiClient: Sendable {
         if let url = URL(string: baseStr + relStr) {
             return url
         }
-        if let encoded = (baseStr + relStr).addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
-            let url = URL(string: encoded)
-        {
+        if let encoded = (baseStr + relStr).addingPercentEncoding(
+            withAllowedCharacters: .urlQueryAllowed
+        ), let url = URL(string: encoded) {
             return url
         }
         return baseURL
