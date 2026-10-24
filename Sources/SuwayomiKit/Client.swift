@@ -23,7 +23,8 @@ public struct SuwayomiClient: Sendable {
         let store = ApolloStore()
         var headers = customHeaders
         if let token, headers["Authorization"] == nil {
-            headers["Authorization"] = "Bearer \(token)"
+            let authHeader = (token.hasPrefix("Bearer ") || token.hasPrefix("Basic ")) ? token : "Bearer \(token)"
+            headers["Authorization"] = authHeader
         }
 
         let endpointURL: URL
@@ -51,19 +52,48 @@ public struct SuwayomiClient: Sendable {
         self.init(baseURL: url)
     }
 
+    public func authenticated(with token: String) -> SuwayomiClient {
+        SuwayomiClient(
+            baseURL: baseURL,
+            token: token,
+            customHeaders: customHeaders,
+            urlSession: urlSession
+        )
+    }
+
     public func resolveURL(_ pathOrURL: String) -> URL {
-        if pathOrURL.lowercased().hasPrefix("http://") || pathOrURL.lowercased().hasPrefix("https://") {
-            if let url = URL(string: pathOrURL) {
+        let trimmed = pathOrURL.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmed.isEmpty {
+            return baseURL
+        }
+
+        if trimmed.lowercased().hasPrefix("http://") || trimmed.lowercased().hasPrefix("https://") {
+            if let url = URL(string: trimmed) {
                 return url
             }
+            if let encoded = trimmed.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+                let url = URL(string: encoded)
+            {
+                return url
+            }
+            return baseURL
         }
 
         let baseStr =
             baseURL.absoluteString.hasSuffix("/")
             ? String(baseURL.absoluteString.dropLast())
             : baseURL.absoluteString
-        let relStr = pathOrURL.hasPrefix("/") ? pathOrURL : "/" + pathOrURL
-        return URL(string: baseStr + relStr) ?? baseURL
+        let relStr = trimmed.hasPrefix("/") ? trimmed : "/" + trimmed
+
+        if let url = URL(string: baseStr + relStr) {
+            return url
+        }
+        if let encoded = (baseStr + relStr).addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+            let url = URL(string: encoded)
+        {
+            return url
+        }
+        return baseURL
     }
 
     public func fetchData(from url: URL) async throws(SuwayomiError) -> Data {
@@ -72,7 +102,8 @@ public struct SuwayomiClient: Sendable {
             request.setValue(value, forHTTPHeaderField: key)
         }
         if let token, request.value(forHTTPHeaderField: "Authorization") == nil {
-            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+            let authHeader = (token.hasPrefix("Bearer ") || token.hasPrefix("Basic ")) ? token : "Bearer \(token)"
+            request.setValue(authHeader, forHTTPHeaderField: "Authorization")
         }
 
         do {

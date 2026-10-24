@@ -3,11 +3,17 @@ import Foundation
 
 extension SuwayomiClient {
     public func library(
+        categoryId: Int? = nil,
+        sourceId: String? = nil,
         first: Int? = nil,
         offset: Int? = nil,
         inLibrary: Bool = true
     ) async throws(SuwayomiError) -> PagedResult<Manga> {
-        let condition = MangaConditionInput(inLibrary: .some(inLibrary))
+        let condition = MangaConditionInput(
+            categoryIds: categoryId.map { .some([Int32($0)]) } ?? .none,
+            inLibrary: .some(inLibrary),
+            sourceId: sourceId.map { .some($0) } ?? .none
+        )
         let data = try await query(
             GetLibraryMangasQuery(
                 condition: .some(condition),

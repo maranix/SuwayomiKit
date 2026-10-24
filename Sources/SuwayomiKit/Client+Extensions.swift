@@ -2,8 +2,21 @@ import API
 import Foundation
 
 extension SuwayomiClient {
-    public func extensions() async throws(SuwayomiError) -> [Extension] {
-        let data = try await query(GetExtensionsQuery(condition: .none))
+    public func extensions(
+        isInstalled: Bool? = nil,
+        hasUpdate: Bool? = nil,
+        lang: String? = nil
+    ) async throws(SuwayomiError) -> [Extension] {
+        let condition: GraphQLNullable<ExtensionConditionInput> =
+            (isInstalled != nil || hasUpdate != nil || lang != nil)
+            ? .some(
+                ExtensionConditionInput(
+                    hasUpdate: hasUpdate.map { .some($0) } ?? .none,
+                    isInstalled: isInstalled.map { .some($0) } ?? .none,
+                    lang: lang.map { .some($0) } ?? .none
+                ))
+            : .none
+        let data = try await query(GetExtensionsQuery(condition: condition))
         return data.extensions.nodes.map { Extension.from($0.fragments.extensionFields) }
     }
 

@@ -4,10 +4,16 @@ import Foundation
 extension SuwayomiClient {
     public func chapters(
         mangaId: Int,
+        isRead: Bool? = nil,
+        isBookmarked: Bool? = nil,
         first: Int? = nil,
         offset: Int? = nil
     ) async throws(SuwayomiError) -> PagedResult<Chapter> {
-        let condition = ChapterConditionInput(mangaId: .some(Int32(mangaId)))
+        let condition = ChapterConditionInput(
+            isBookmarked: isBookmarked.map { .some($0) } ?? .none,
+            isRead: isRead.map { .some($0) } ?? .none,
+            mangaId: .some(Int32(mangaId))
+        )
         let data = try await query(
             GetChaptersQuery(
                 condition: .some(condition),

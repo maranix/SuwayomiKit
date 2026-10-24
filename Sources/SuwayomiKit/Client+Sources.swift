@@ -17,12 +17,22 @@ public enum SourceMangaType: String, Sendable, Equatable, Codable {
 
 extension SuwayomiClient {
     public func sources(
+        lang: String? = nil,
+        name: String? = nil,
         first: Int? = nil,
         offset: Int? = nil
     ) async throws(SuwayomiError) -> PagedResult<Source> {
+        let condition: GraphQLNullable<SourceConditionInput> =
+            (lang != nil || name != nil)
+            ? .some(
+                SourceConditionInput(
+                    lang: lang.map { .some($0) } ?? .none,
+                    name: name.map { .some($0) } ?? .none
+                ))
+            : .none
         let data = try await query(
             GetSourcesQuery(
-                condition: .none,
+                condition: condition,
                 first: first.map { .some(Int32($0)) } ?? .none,
                 offset: offset.map { .some(Int32($0)) } ?? .none
             )

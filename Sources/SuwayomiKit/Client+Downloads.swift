@@ -61,8 +61,11 @@ extension SuwayomiClient {
         return DownloaderState.from(payload.downloadStatus.state)
     }
 
-    public func deleteDownloadedChapter(chapterId: Int) async throws(SuwayomiError) -> Chapter? {
+    public func deleteDownloadedChapter(chapterId: Int) async throws(SuwayomiError) -> Chapter {
         let data = try await mutation(DeleteDownloadedChapterMutation(input: .init(id: Int32(chapterId))))
-        return data.deleteDownloadedChapter.map { Chapter.from($0.chapters.fragments.chapterFields) }
+        guard let payload = data.deleteDownloadedChapter else {
+            throw SuwayomiError.missingData
+        }
+        return Chapter.from(payload.chapters.fragments.chapterFields)
     }
 }

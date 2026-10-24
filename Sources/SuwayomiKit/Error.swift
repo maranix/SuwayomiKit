@@ -46,10 +46,12 @@ public enum SuwayomiError: Error, Sendable, LocalizedError {
         case .network(let urlError):
             return urlError.localizedDescription
         case .operation(let errors):
-            return errors.compactMap { error in
-                error.message
-            }.joined(separator: "; ")
-
+            let messages = errors.compactMap { $0.message ?? $0.errorDescription }
+            if !messages.isEmpty {
+                return messages.joined(separator: "; ")
+            }
+            let descriptions = errors.map { $0.localizedDescription }.filter { !$0.isEmpty }
+            return descriptions.isEmpty ? "GraphQL operation error" : descriptions.joined(separator: "; ")
         }
     }
 }
