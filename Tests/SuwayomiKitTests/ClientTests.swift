@@ -1,6 +1,7 @@
 import Foundation
-@testable import SuwayomiKit
 import Testing
+
+@testable import SuwayomiKit
 
 @Suite("Client Tests")
 struct ClientTests {
@@ -10,8 +11,12 @@ struct ClientTests {
         let client = SuwayomiClient(baseURL: baseURL)
 
         #expect(client.baseURL == baseURL)
-        #expect(client.resolveURL("/api/v1/manga/1/thumbnail").absoluteString == "http://localhost:4567/api/v1/manga/1/thumbnail")
-        #expect(client.resolveURL("api/v1/manga/1/thumbnail").absoluteString == "http://localhost:4567/api/v1/manga/1/thumbnail")
+        #expect(
+            client.resolveURL("/api/v1/manga/1/thumbnail").absoluteString
+                == "http://localhost:4567/api/v1/manga/1/thumbnail")
+        #expect(
+            client.resolveURL("api/v1/manga/1/thumbnail").absoluteString
+                == "http://localhost:4567/api/v1/manga/1/thumbnail")
     }
 
     @Test("Client URL resolution with trailing slash")
@@ -19,8 +24,12 @@ struct ClientTests {
         let baseURL = URL(string: "http://localhost:4567/")!
         let client = SuwayomiClient(baseURL: baseURL)
 
-        #expect(client.resolveURL("/api/v1/manga/1/thumbnail").absoluteString == "http://localhost:4567/api/v1/manga/1/thumbnail")
-        #expect(client.resolveURL("api/v1/manga/1/thumbnail").absoluteString == "http://localhost:4567/api/v1/manga/1/thumbnail")
+        #expect(
+            client.resolveURL("/api/v1/manga/1/thumbnail").absoluteString
+                == "http://localhost:4567/api/v1/manga/1/thumbnail")
+        #expect(
+            client.resolveURL("api/v1/manga/1/thumbnail").absoluteString
+                == "http://localhost:4567/api/v1/manga/1/thumbnail")
     }
 
     @Test("Client URL resolution with reverse proxy subpath")
@@ -28,8 +37,12 @@ struct ClientTests {
         let baseURL = URL(string: "http://manga.example.com/suwayomi")!
         let client = SuwayomiClient(baseURL: baseURL)
 
-        #expect(client.resolveURL("/api/v1/manga/42/chapter/1/page/0").absoluteString == "http://manga.example.com/suwayomi/api/v1/manga/42/chapter/1/page/0")
-        #expect(client.resolveURL("api/v1/manga/42/chapter/1/page/0").absoluteString == "http://manga.example.com/suwayomi/api/v1/manga/42/chapter/1/page/0")
+        #expect(
+            client.resolveURL("/api/v1/manga/42/chapter/1/page/0").absoluteString
+                == "http://manga.example.com/suwayomi/api/v1/manga/42/chapter/1/page/0")
+        #expect(
+            client.resolveURL("api/v1/manga/42/chapter/1/page/0").absoluteString
+                == "http://manga.example.com/suwayomi/api/v1/manga/42/chapter/1/page/0")
     }
 
     @Test("Client URL resolution preserves absolute URLs")

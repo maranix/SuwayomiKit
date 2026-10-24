@@ -32,7 +32,9 @@ public struct SuwayomiClient: Sendable {
             endpointURL = baseURL
         } else {
             let trimmedBase = baseStr.hasSuffix("/") ? String(baseStr.dropLast()) : baseStr
-            endpointURL = URL(string: trimmedBase + "/api/graphql") ?? baseURL.appendingPathComponent("api").appendingPathComponent("graphql")
+            endpointURL =
+                URL(string: trimmedBase + "/api/graphql")
+                ?? baseURL.appendingPathComponent("api").appendingPathComponent("graphql")
         }
 
         let transport = RequestChainNetworkTransport(
@@ -56,7 +58,8 @@ public struct SuwayomiClient: Sendable {
             }
         }
 
-        let baseStr = baseURL.absoluteString.hasSuffix("/")
+        let baseStr =
+            baseURL.absoluteString.hasSuffix("/")
             ? String(baseURL.absoluteString.dropLast())
             : baseURL.absoluteString
         let relStr = pathOrURL.hasPrefix("/") ? pathOrURL : "/" + pathOrURL

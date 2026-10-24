@@ -8,7 +8,7 @@ nonisolated public struct ClearCachedImagesMutation: GraphQLMutation {
   public static let operationName: String = "ClearCachedImages"
   public static let operationDocument: ApolloAPI.OperationDocument = .init(
     definition: .init(
-      #"mutation ClearCachedImages($input: ClearCachedImagesInput!) { clearCachedImages(input: $input) { __typename cachedPages cachedThumbnails } }"#
+      #"mutation ClearCachedImages($input: ClearCachedImagesInput!) { clearCachedImages(input: $input) { __typename cachedPages cachedThumbnails downloadedThumbnails } }"#
     ))
 
   public var input: ClearCachedImagesInput
@@ -45,6 +45,7 @@ nonisolated public struct ClearCachedImagesMutation: GraphQLMutation {
         .field("__typename", String.self),
         .field("cachedPages", Bool?.self),
         .field("cachedThumbnails", Bool?.self),
+        .field("downloadedThumbnails", Bool?.self),
       ] }
       @_spi(Execution) public static var __fulfilledFragments: [any ApolloAPI.SelectionSet.Type] { [
         ClearCachedImagesMutation.Data.ClearCachedImages.self
@@ -52,6 +53,7 @@ nonisolated public struct ClearCachedImagesMutation: GraphQLMutation {
 
       public var cachedPages: Bool? { __data["cachedPages"] }
       public var cachedThumbnails: Bool? { __data["cachedThumbnails"] }
+      public var downloadedThumbnails: Bool? { __data["downloadedThumbnails"] }
     }
   }
 }

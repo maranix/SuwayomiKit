@@ -1,6 +1,7 @@
 import Foundation
-@testable import SuwayomiKit
 import Testing
+
+@testable import SuwayomiKit
 
 @Suite("Domain Model Tests")
 struct ModelTests {

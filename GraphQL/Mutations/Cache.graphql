@@ -2,5 +2,6 @@ mutation ClearCachedImages($input: ClearCachedImagesInput!) {
   clearCachedImages(input: $input) {
     cachedPages
     cachedThumbnails
+    downloadedThumbnails
   }
 }
