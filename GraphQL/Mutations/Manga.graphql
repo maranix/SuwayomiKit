@@ -1,0 +1,26 @@
+mutation FetchMangaAndChapters($input: FetchMangaAndChaptersInput!) {
+  fetchMangaAndChapters(input: $input) {
+    manga {
+      ...MangaFields
+    }
+    chapters {
+      ...ChapterFields
+    }
+  }
+}
+
+mutation UpdateManga($input: UpdateMangaInput!) {
+  updateManga(input: $input) {
+    manga {
+      ...MangaFields
+    }
+  }
+}
+
+mutation UpdateMangaCategories($input: UpdateMangaCategoriesInput!) {
+  updateMangaCategories(input: $input) {
+    manga {
+      ...MangaFields
+    }
+  }
+}

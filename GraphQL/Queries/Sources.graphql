@@ -1,0 +1,17 @@
+query GetSources($condition: SourceConditionInput, $first: Int, $offset: Int) {
+  sources(condition: $condition, first: $first, offset: $offset) {
+    nodes {
+      ...SourceFields
+    }
+    pageInfo {
+      ...PageInfoFields
+    }
+    totalCount
+  }
+}
+
+query GetSource($id: LongString!) {
+  source(id: $id) {
+    ...SourceFields
+  }
+}

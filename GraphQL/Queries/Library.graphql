@@ -1,0 +1,11 @@
+query GetLibraryMangas($condition: MangaConditionInput, $first: Int, $offset: Int) {
+  mangas(condition: $condition, first: $first, offset: $offset) {
+    nodes {
+      ...MangaFields
+    }
+    pageInfo {
+      ...PageInfoFields
+    }
+    totalCount
+  }
+}

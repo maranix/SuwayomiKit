@@ -1,0 +1,17 @@
+query GetChapters($condition: ChapterConditionInput, $order: [ChapterOrderInput!], $first: Int, $offset: Int) {
+  chapters(condition: $condition, order: $order, first: $first, offset: $offset) {
+    nodes {
+      ...ChapterFields
+    }
+    pageInfo {
+      ...PageInfoFields
+    }
+    totalCount
+  }
+}
+
+query GetChapter($id: Int!) {
+  chapter(id: $id) {
+    ...ChapterFields
+  }
+}

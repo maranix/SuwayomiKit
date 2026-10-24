@@ -1,0 +1,14 @@
+query GetCategories {
+  categories {
+    nodes {
+      ...CategoryFields
+    }
+    totalCount
+  }
+}
+
+query GetCategory($id: Int!) {
+  category(id: $id) {
+    ...CategoryFields
+  }
+}

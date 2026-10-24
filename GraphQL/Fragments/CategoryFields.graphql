@@ -1,0 +1,9 @@
+fragment CategoryFields on CategoryType {
+  id
+  name
+  order
+  default
+  isDefaultCategory
+  includeInDownload
+  includeInUpdate
+}

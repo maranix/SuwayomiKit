@@ -1,0 +1,10 @@
+query GetManga($id: Int!) {
+  manga(id: $id) {
+    ...MangaFields
+    categories {
+      nodes {
+        ...CategoryFields
+      }
+    }
+  }
+}

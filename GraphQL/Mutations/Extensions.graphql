@@ -1,0 +1,7 @@
+mutation UpdateExtension($input: UpdateExtensionInput!) {
+  updateExtension(input: $input) {
+    extension {
+      ...ExtensionFields
+    }
+  }
+}

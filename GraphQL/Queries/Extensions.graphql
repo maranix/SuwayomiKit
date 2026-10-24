@@ -1,0 +1,14 @@
+query GetExtensions($condition: ExtensionConditionInput) {
+  extensions(condition: $condition) {
+    nodes {
+      ...ExtensionFields
+    }
+    totalCount
+  }
+}
+
+query GetExtension($pkgName: String!) {
+  extension(pkgName: $pkgName) {
+    ...ExtensionFields
+  }
+}

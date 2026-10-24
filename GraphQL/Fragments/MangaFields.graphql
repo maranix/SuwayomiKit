@@ -1,0 +1,23 @@
+fragment MangaFields on MangaType {
+  id
+  title
+  artist
+  author
+  description
+  genre
+  status
+  inLibrary
+  inLibraryAt
+  thumbnailUrl
+  thumbnailUrlLastFetched
+  sourceId
+  url
+  realUrl
+  unreadCount
+  downloadCount
+  bookmarkCount
+  updateStrategy
+  initialized
+  lastFetchedAt
+  chaptersLastFetchedAt
+}

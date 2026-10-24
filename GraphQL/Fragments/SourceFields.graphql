@@ -1,0 +1,11 @@
+fragment SourceFields on SourceType {
+  id
+  name
+  displayName
+  lang
+  iconUrl
+  homeUrl
+  supportsLatest
+  isConfigurable
+  contentWarning
+}

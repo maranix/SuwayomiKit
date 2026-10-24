@@ -1,0 +1,12 @@
+fragment ExtensionFields on ExtensionType {
+  pkgName
+  name
+  versionName
+  versionCodeLong
+  lang
+  isInstalled
+  hasUpdate
+  isObsolete
+  iconUrl
+  contentWarning
+}

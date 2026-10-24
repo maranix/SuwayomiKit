@@ -1,0 +1,17 @@
+query GetDownloadStatus {
+  downloadStatus {
+    state
+    queue {
+      position
+      progress
+      state
+      tries
+      chapter {
+        ...ChapterFields
+      }
+      manga {
+        ...MangaFields
+      }
+    }
+  }
+}

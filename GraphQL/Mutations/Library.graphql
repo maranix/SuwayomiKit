@@ -1,0 +1,17 @@
+mutation UpdateLibrary($input: UpdateLibraryInput!) {
+  updateLibrary(input: $input) {
+    updateStatus {
+      jobsInfo {
+        isRunning
+        totalJobs
+        finishedJobs
+      }
+    }
+  }
+}
+
+mutation UpdateStop($input: UpdateStopInput!) {
+  updateStop(input: $input) {
+    clientMutationId
+  }
+}

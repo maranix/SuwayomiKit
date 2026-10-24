@@ -1,0 +1,8 @@
+mutation FetchSourceManga($input: FetchSourceMangaInput!) {
+  fetchSourceManga(input: $input) {
+    hasNextPage
+    mangas {
+      ...MangaFields
+    }
+  }
+}

@@ -1,0 +1,18 @@
+fragment ChapterFields on ChapterType {
+  id
+  mangaId
+  name
+  chapterNumber
+  pageCount
+  isBookmarked
+  isDownloaded
+  isRead
+  lastPageRead
+  lastReadAt
+  uploadDate
+  fetchedAt
+  scanlator
+  sourceOrder
+  url
+  realUrl
+}

@@ -1,0 +1,11 @@
+query GetSettings {
+  settings {
+    ip
+    port
+    authMode
+    authUsername
+    downloadsPath
+    autoDownloadNewChapters
+    maxSourcesInParallel
+  }
+}

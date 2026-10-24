@@ -1,0 +1,16 @@
+mutation FetchChapterPages($input: FetchChapterPagesInput!) {
+  fetchChapterPages(input: $input) {
+    pages
+    chapter {
+      ...ChapterFields
+    }
+  }
+}
+
+mutation UpdateChapter($input: UpdateChapterInput!) {
+  updateChapter(input: $input) {
+    chapter {
+      ...ChapterFields
+    }
+  }
+}
