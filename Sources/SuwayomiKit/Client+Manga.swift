@@ -4,9 +4,8 @@ import Foundation
 extension SuwayomiClient {
     public func manga(id: Int) async throws(SuwayomiError) -> Manga {
         let data = try await query(GetMangaQuery(id: Int32(id)))
-        let m = data.manga
-        let cats = m.categories.nodes.map { Category.from($0.fragments.categoryFields) }
-        return Manga.from(m.fragments.mangaFields, categories: cats)
+        let cats = data.manga.categories.nodes.map { Category.from($0.fragments.categoryFields) }
+        return Manga.from(data.manga.fragments.mangaFields, categories: cats)
     }
 
     public func fetchMangaAndChapters(
