@@ -232,4 +232,24 @@ struct ModelTests {
         let decoded = try JSONDecoder().decode(PagedResult<Manga>.self, from: data)
         #expect(decoded == paged)
     }
+
+    @Test("ServerInfo model encodes and decodes")
+    func testServerInfoModel() throws {
+        let os = ServerInfo.Platform.OS(name: "macOS", version: "15.0")
+        let jvm = ServerInfo.Platform.JVM(vmName: "OpenJDK 64-Bit Server VM", javaVersion: "21.0.1")
+        let platform = ServerInfo.Platform(headless: true, arch: "aarch64", os: os, jvm: jvm)
+        let serverInfo = ServerInfo(
+            name: "Suwayomi-Server",
+            version: "v1.1.1",
+            buildTime: "2026-10-25T00:00:00Z",
+            buildType: "Release",
+            github: URL(string: "https://github.com/Suwayomi/Suwayomi-Server"),
+            discord: URL(string: "https://discord.gg/suwayomi"),
+            platform: platform
+        )
+
+        let data = try JSONEncoder().encode(serverInfo)
+        let decoded = try JSONDecoder().decode(ServerInfo.self, from: data)
+        #expect(decoded == serverInfo)
+    }
 }
