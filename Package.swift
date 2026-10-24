@@ -20,14 +20,20 @@ let package = Package(
             name: "API",
             dependencies: [
                 .product(name: "Apollo", package: "apollo-ios")
-            ],
+            ]
         ),
         .target(
             name: "SuwayomiKit",
             dependencies: [
                 .target(name: "API"),
                 .product(name: "Apollo", package: "apollo-ios"),
-            ],
+            ]
+        ),
+        .testTarget(
+            name: "SuwayomiKitTests",
+            dependencies: [
+                .target(name: "SuwayomiKit")
+            ]
         ),
     ],
     swiftLanguageModes: [.v6]
