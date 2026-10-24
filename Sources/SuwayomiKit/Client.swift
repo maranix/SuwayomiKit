@@ -3,23 +3,32 @@ import Apollo
 import Foundation
 
 public struct SuwayomiClient: Sendable {
-    private let apollo: ApolloClient
+    let apollo: ApolloClient
 
     public init(url: URL) {
         self.apollo = ApolloClient(url: url)
     }
 
-    public func aboutServer() async throws -> ServerInfo {
-        let response = try await apollo.fetch(query: AboutServerQuery())
-        
+    func query<Query: GraphQLQuery>(_ query: Query) async throws(SuwayomiError) -> Query.Data
+    where Query.ResponseFormat == SingleResponseFormat {
+        let response: GraphQLResponse<Query>
+
+        do {
+            response = try await apollo.fetch(query: query)
+        } catch let urlError as URLError {
+            throw .network(urlError)
+        } catch {
+            throw .unexpected(error.localizedDescription)
+        }
+
         if let errors = response.errors, !errors.isEmpty {
-            throw ClientError.error
+            throw .operation(errors.compactMap(OperationError.from))
         }
-        
+
         guard let data = response.data else {
-            throw ClientError.missingData
+            throw .missingData
         }
-        
-        return ServerInfo.from(data.aboutServer)
+
+        return data
     }
 }
