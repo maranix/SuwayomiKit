@@ -69,8 +69,8 @@ let client = SuwayomiClient(
 ### Browse Library & Categories
 
 ```swift
-// Fetch library mangas
-let libraryResult = try await client.library(first: 20, offset: 0)
+// Fetch library mangas (optionally filtered by category or source)
+let libraryResult = try await client.library(categoryId: 1, first: 20, offset: 0)
 for manga in libraryResult.items {
     print("Manga: \(manga.title) (ID: \(manga.id))")
 }
@@ -80,6 +80,12 @@ let categories = try await client.categories()
 for category in categories {
     print("Category: \(category.name) (ID: \(category.id))")
 }
+
+// Browse sources by language
+let sourcesResult = try await client.sources(lang: "en")
+for source in sourcesResult.items {
+    print("Source: \(source.displayName) (ID: \(source.id))")
+}
 ```
 
 ### Read Manga & Chapters
@@ -88,16 +94,17 @@ for category in categories {
 // Get manga details
 let manga = try await client.manga(id: 1)
 
-// Fetch chapters for the manga
-let chaptersResult = try await client.chapters(mangaId: manga.id)
+// Fetch chapters for the manga (optionally filter unread or bookmarked)
+let chaptersResult = try await client.chapters(mangaId: manga.id, isRead: false)
 if let chapter = chaptersResult.items.first {
     // Fetch chapter page URLs
     let pages = try await client.fetchChapterPages(chapterId: chapter.id)
     
-    // Download first page image
+    // Download first page image or resolve URL for SwiftUI AsyncImage / Kingfisher
     if let firstPagePath = pages.first {
+        let pageURL = client.pageURL(for: firstPagePath)
         let imageData = try await client.fetchPageImageData(pagePathOrURL: firstPagePath)
-        print("Downloaded page data: \(imageData.count) bytes")
+        print("Page URL: \(pageURL), Downloaded: \(imageData.count) bytes")
     }
 
     // Mark chapter as read
@@ -109,9 +116,15 @@ if let chapter = chaptersResult.items.first {
 }
 ```
 
-### Fetch Thumbnails
+### Media & Thumbnails
 
 ```swift
+// Get resolved URL for UI image loaders (Kingfisher, Nuke, AsyncImage)
+if let thumbnailURL = client.thumbnailURL(for: manga) {
+    print("Thumbnail URL: \(thumbnailURL)")
+}
+
+// Or directly download image data with automatic authorization headers
 if let thumbnailData = try await client.fetchThumbnail(for: manga) {
     print("Loaded thumbnail: \(thumbnailData.count) bytes")
 }
