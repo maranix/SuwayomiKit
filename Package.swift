@@ -7,7 +7,7 @@ let package = Package(
     name: "SuwayomiKit",
     platforms: [.macOS(.v26), .iOS(.v26)],
     products: [
-        .library(name: "SuwayomiKit", targets: ["API"])
+        .library(name: "SuwayomiKit", targets: ["SuwayomiKit"])
     ],
     dependencies: [
         .package(
@@ -21,7 +21,14 @@ let package = Package(
             dependencies: [
                 .product(name: "Apollo", package: "apollo-ios")
             ],
-        )
+        ),
+        .target(
+            name: "SuwayomiKit",
+            dependencies: [
+                .target(name: "API"),
+                .product(name: "Apollo", package: "apollo-ios"),
+            ],
+        ),
     ],
     swiftLanguageModes: [.v6]
 )

@@ -14,7 +14,7 @@
       }
     },
     "schemaTypes" : {
-      "path" : "../API/Generated",
+      "path" : "../Sources/API",
       "moduleType" : {
         "other" : {
         }
