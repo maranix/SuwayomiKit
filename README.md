@@ -27,7 +27,7 @@ Suwayomi-Server (formerly Tachidesk) is a self-hosted manga server that runs sou
 ## Requirements
 
 - Swift 6.0 or later (Tested with Swift 6.3)
-- macOS 14+ / iOS 17+ (Package platform targets macOS 26 / iOS 26)
+- macOS 15+ / iOS 15+
 - Apollo iOS 2.x
 - A running Suwayomi-Server instance
 
@@ -148,9 +148,10 @@ GraphQL operations live in `GraphQL/Queries`, `GraphQL/Mutations`, and `GraphQL/
 ```sh
 make schema    # Download latest schema from Suwayomi-Server
 make generate  # Regenerate Apollo GraphQL Swift sources
+make test      # Run test suite
+make format    # Format code
+make lint      # Lint code
 swift build    # Build package
-swift test     # Run test suite
-swift format --recursive --in-place Sources Tests # Format code
 ```
 
 ## Roadmap
@@ -170,7 +171,7 @@ swift format --recursive --in-place Sources Tests # Format code
 
 ## Contributing
 
-Issues and pull requests are welcome. Please keep changes focused, format code with `swift format`, and make sure `swift build` and `swift test` pass before committing.
+Issues and pull requests are welcome. Please keep changes focused, format code with `make format`, and make sure `make build` and `make test` pass before committing.
 
 ## License
 

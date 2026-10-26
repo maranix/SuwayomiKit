@@ -2,6 +2,7 @@
 
 API_DIR := Sources/API
 PACKAGE_DIR := Sources/SuwayomiKit
+TESTS_DIR   := Tests
 APOLLO_CLI  := .build/apollo-ios-cli
 
 GRAPHQL_DIR    := GraphQL
@@ -40,13 +41,13 @@ format:
 		--in-place \
 		--recursive \
 		--ignore-unparsable-files \
-		$(PACKAGE_DIR)
+		$(PACKAGE_DIR) $(TESTS_DIR)
 
 lint: 
 	@swift format lint \
 		--recursive \
 		--ignore-unparsable-files \
-		$(PACKAGE_DIR)
+		$(PACKAGE_DIR) $(TESTS_DIR)
 
 test:
 	@swift test \
