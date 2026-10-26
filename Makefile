@@ -1,6 +1,7 @@
-.PHONY: apollo-cli schema generate config
+.PHONY: apollo-cli schema generate config format lint test
 
 API_DIR := Sources/API
+PACKAGE_DIR := Sources/SuwayomiKit
 APOLLO_CLI  := .build/apollo-ios-cli
 
 GRAPHQL_DIR    := GraphQL
@@ -33,3 +34,19 @@ config: apollo-cli
 
 generate: apollo-cli
 	@./$(APOLLO_CLI) generate --path $(CODEGEN_CONFIG)
+
+format: 
+	@swift format \
+		--in-place \
+		--recursive \
+		--ignore-unparsable-files \
+		$(PACKAGE_DIR)
+
+lint: 
+	@swift format lint \
+		--recursive \
+		--ignore-unparsable-files \
+		$(PACKAGE_DIR)
+
+test:
+	@swift test
