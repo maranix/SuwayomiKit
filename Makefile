@@ -49,4 +49,6 @@ lint:
 		$(PACKAGE_DIR)
 
 test:
-	@swift test
+	@swift test \
+		--package-path $(PACKAGE_DIR) \
+		--parallel
