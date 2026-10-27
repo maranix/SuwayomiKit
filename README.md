@@ -38,7 +38,7 @@ Add the package to your `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/maranix/SuwayomiKit.git", branch: "main")
+    .package(url: "https://github.com/maranix/SuwayomiKit.git", from: "0.1.0")
 ]
 ```
 
