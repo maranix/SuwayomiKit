@@ -21,8 +21,9 @@ Suwayomi-Server (formerly Tachidesk) is a self-hosted manga server that runs sou
 - **Swift 6 Strict Concurrency**: Domain models are `Sendable` value types; entity models conform to `Identifiable` and `Hashable`.
 - **Pure Swift Domain Models**: Isolates client applications completely from raw GraphQL and Apollo-generated types.
 - **Typed Errors**: Uses typed Swift throws (`throws(SuwayomiError)`) for explicit, clean error handling.
-- **Base URL & Reverse Proxy Support**: Automatically derives GraphQL endpoint and resolves relative media paths (`/api/v1/...`) against arbitrary server base URLs and subpaths.
-- **Token & Custom Headers**: Seamlessly handles Bearer token authentication and custom HTTP headers for both GraphQL requests and direct media/page image downloads.
+- **Base URL & Reverse Proxy Support**: Automatically derives the GraphQL endpoint and resolves relative media paths (`/api/v1/...`) against arbitrary server base URLs, subpaths, and custom GraphQL routes.
+- **Token & Custom Headers**: Seamlessly handles Bearer token authentication and custom HTTP headers for both GraphQL requests and direct media/page image downloads. Credentials are redacted from descriptions and stripped on cross-origin redirects.
+- **Chapter Ordering**: Multi-key chapter sorting with ascending/descending directions.
 
 ## Requirements
 
@@ -62,15 +63,15 @@ import SuwayomiKit
 let client = SuwayomiClient(
     baseURL: URL(string: "http://localhost:4567")!,
     token: "optional_bearer_token",
-    customHeaders: ["X-App-Name": "MyReader"]
+    headers: ["X-App-Name": "MyReader"]
 )
 ```
 
 ### Browse Library & Categories
 
 ```swift
-// Fetch library mangas (optionally filtered by category or source)
-let libraryResult = try await client.library(categoryId: 1, first: 20, offset: 0)
+// Fetch library mangas (optionally filtered by category IDs or source)
+let libraryResult = try await client.library(categoryIDs: [1], first: 20, offset: 0)
 for manga in libraryResult {
     print("Manga: \(manga.title) (ID: \(manga.id))")
 }
@@ -106,16 +107,22 @@ Use `manga(id:)` or `source(id:)` when the complete model is required. `MangaSum
 let manga = try await client.manga(id: 1)
 
 // Fetch chapters for the manga (optionally filter unread or bookmarked)
-let chaptersResult = try await client.chapters(mangaId: manga.id, isRead: false)
+let chaptersResult = try await client.chapters(
+    mangaId: manga.id,
+    isRead: false,
+    order: [ChapterOrder(by: .uploadDate, direction: .descending)]
+)
 if let chapter = chaptersResult.first {
     // Fetch chapter page URLs
     let pages = try await client.fetchChapterPages(chapterId: chapter.id)
     
     // Download first page image or resolve URL for SwiftUI AsyncImage / Kingfisher
     if let firstPagePath = pages.first {
-        let pageURL = client.pageURL(for: firstPagePath)
-        let imageData = try await client.fetchPageImageData(pagePathOrURL: firstPagePath)
-        print("Page URL: \(pageURL), Downloaded: \(imageData.count) bytes")
+        if let pageURL = client.pageURL(for: firstPagePath) {
+            print("Page URL: \(pageURL)")
+        }
+        let imageData = try await client.fetchPage(at: firstPagePath)
+        print("Downloaded: \(imageData.count) bytes")
     }
 
     // Mark chapter as read
@@ -147,12 +154,32 @@ if let thumbnailData = try await client.fetchThumbnail(for: manga) {
 
 ```swift
 // Check download queue
-let status = try await client.downloadStatus()
+let status = try await client.downloadQueueStatus()
 print("Downloader state: \(status.state), Queued items: \(status.queue.count)")
 
 // Enqueue chapter for offline reading
 let state = try await client.enqueueDownload(chapterId: 10)
 ```
+
+### Authentication, Custom Endpoints & Cache
+
+```swift
+// Add or replace the bearer token without losing the Apollo cache
+let authenticated = client.authenticated(with: "fresh_token")
+
+// Point at a reverse proxy or non-default GraphQL route
+let proxyClient = SuwayomiClient(
+    baseURL: URL(string: "https://reader.example.com/suwayomi")!,
+    graphQLPath: "/custom/graphql"
+)
+
+// Clear the local normalized cache
+try await authenticated.clearCache()
+```
+
+`SuwayomiClient` redacts tokens and header values from `description` output. Media
+requests also strip managed headers if a redirect leaves the configured server
+origin or subpath.
 
 ## Development
 
@@ -178,7 +205,7 @@ swift build    # Build package
 - [x] Media/image fetcher with auth & reverse proxy URL resolution
 - [x] Download queue management
 - [x] Error model (`SuwayomiError`)
-- [x] Unit test suite (`ClientTests`, `ModelTests`, `ModelMappingTests`, `NetworkTests`)
+- [x] Unit test suite (`ClientTests`, `GraphQLTests`, `ModelTests`, `ModelMappingTests`, `NetworkTests`)
 - [ ] Subscriptions / WebSockets for real-time download and update events
 - [ ] DocC documentation
 

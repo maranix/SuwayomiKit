@@ -1,17 +1,17 @@
 # Graph Report - SuwayomiKit  (2026-10-27)
 
 ## Corpus Check
-- 178 files · ~32,285 words
+- 183 files · ~36,661 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 34 file(s) not represented in the graph (top: .graphql 28, (none) 4, .graphqls 1)
 
 ## Summary
-- 2525 nodes · 4054 edges · 170 communities (129 shown, 41 thin omitted)
-- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 171 edges (avg confidence: 0.85)
+- 2686 nodes · 4382 edges · 157 communities (126 shown, 31 thin omitted)
+- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 195 edges (avg confidence: 0.86)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `a5e8ae0d`
+- Built from commit: `8c050933`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -20,7 +20,7 @@
 - MangaSummaryFields
 - Package API & Roadmap
 - Sendable
-- String
+- SuwayomiClientConfig
 - AboutServer
 - SourceSummaryFields
 - Swift Package Manifest
@@ -33,7 +33,7 @@
 - Manga
 - FilterChangeInput
 - Node
-- Source
+- Sendable
 - DequeueChapterDownload
 - EnqueueChapterDownload
 - StartDownloader
@@ -57,40 +57,42 @@
 - ExtensionConditionInput
 - API
 - Manga
-- ChapterOrderBy
+- EnumType
 - Chapters
 - Chapter
 - Chapter
 - Chapter
 - Chapter
 - .mutation
-- SuwayomiClient
+- ClientTests
 - ExtensionFields
-- AuthMode
+- MockNetworkTransport
 - SourceFields
 - StopDownloader
 - Node
 - Chapter
 - CategoryFields
 - .fetchData
-- UpdateCategory
+- FetchSourceMangaInput
 - UpdateChapter
-- UpdateExtension
+- ChapterOrderBy
 - UpdateMangaCategories
+- .chapters
 - PageInfo
 - Extension
 - UpdateMangaInput
 - DownloadStatus
 - Node
-- MangaStatus
+- UpdateExtensionMutation
 - PageInfoFields
-- EnumType
-- Login
+- MangaWithChapters
+- SuwayomiClient
 - UpdateManga
 - CreateCategoryInput
-- FetchSourceMangaInput
+- MangaStatus
 - Category
 - Login
+- .mutation
 - GraphQLQuery
 - Category
 - Queue
@@ -101,17 +103,17 @@
 - FragmentContainer
 - Data
 - ModelTests
-- Category
-- CreateCategory
 - FragmentContainer
+- Login
+- DeleteDownloadedChapter
 - Data
 - Data
 - String
 - FetchMangaAndChaptersInput
 - SourceConditionInput
 - UpdateCategoryPatchInput
-- MockURLProtocol
-- DataDict
+- mockHTTPResponse
+- UpdateChapterInput
 - Data
 - PagedResult
 - Chapters
@@ -119,8 +121,8 @@
 - Sources
 - FetchChapterPagesInput
 - CategoryIncludeOrExclude
-- UpdateChapterInput
 - UpdateChapterPatchInput
+- AuthMode
 - UpdateMangaCategoriesInput
 - UpdateMangaCategoriesPatchInput
 - FetchMangaAndChapters
@@ -130,83 +132,70 @@
 - DeleteDownloadedChapterInput
 - UpdateExtensionPatchInput
 - PageInfo
-- RefreshTokenInput
 - InputObject
-- UpdateCategoryInput
+- InputObject
+- ChapterOrderBy
 - GetChaptersQuery
 - GetLibraryMangasQuery
-- GetCategoryQuery
+- MangaStatus
 - GetSourcesQuery
 - DataDict
+- .updateMangaCategories
 - FetchChapterPages
-- SortOrder
-- UpdateStopInput
-- FetchSourceManga
+- ChapterOrderInput
 - GetChapterQuery
+- FetchSourceManga
 - Data
 - GetExtensionsQuery
 - GetMangaQuery
 - Categories
 - Data
 - DataDict
-- ChapterOrderInput
+- FetchSourceMangaMutation
 - Chapter
 - GraphQLMutation
-- GetSourceQuery
+- UpdateChapterMutation
 - DeleteDownloadedChapterMutation
 - Data
 - FetchChapterPagesMutation
 - FetchMangaAndChaptersMutation
-- SortSelectionInput
 - UpdateExtension
-- UpdateChapterMutation
+- AuthMode
 - UpdateMangaCategoriesMutation
 - Data
 - UpdateMangaMutation
-- GetLibraryUpdateStatusQuery
+- .query
 - IncludeOrExclude
 - SchemaConfiguration
-- CreateCategoryMutation
-- Data
-- FetchSourceMangaMutation
+- FragmentContainer
 - Data
 - DataDict
-- UpdateCategoryMutation
-- DeleteDownloadedChapter
-- UpdateStopMutation
-- Fragments
-- Data
-- AuthMode
-- ContentWarning
-- DownloadState
 - Extension
 - LibraryJobsInfo
-- FetchSourceMangaType
-- TriState
 
 ## God Nodes (most connected - your core abstractions)
 1. `ApolloAPI` - 310 edges
-2. `API` - 159 edges
-3. `SuwayomiClient` - 83 edges
-4. `Objects` - 51 edges
-5. `MangaFields` - 41 edges
-6. `ChapterFields` - 39 edges
-7. `Manga` - 37 edges
-8. `Manga` - 34 edges
+2. `API` - 162 edges
+3. `Objects` - 51 edges
+4. `MangaFields` - 41 edges
+5. `ChapterFields` - 39 edges
+6. `Manga` - 37 edges
+7. `SuwayomiClientConfig` - 37 edges
+8. `Source` - 35 edges
 9. `Manga` - 34 edges
 10. `Manga` - 34 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `InlineFragment` --inherits--> `ApolloAPI`  [EXTRACTED]
-  Sources/API/Schema/SchemaMetadata.graphql.swift → Tests/SuwayomiKitTests/ModelMappingTests.swift
-- `MutableInlineFragment` --inherits--> `ApolloAPI`  [EXTRACTED]
-  Sources/API/Schema/SchemaMetadata.graphql.swift → Tests/SuwayomiKitTests/ModelMappingTests.swift
-- `MutableSelectionSet` --inherits--> `ApolloAPI`  [EXTRACTED]
-  Sources/API/Schema/SchemaMetadata.graphql.swift → Tests/SuwayomiKitTests/ModelMappingTests.swift
-- `SelectionSet` --inherits--> `ApolloAPI`  [EXTRACTED]
-  Sources/API/Schema/SchemaMetadata.graphql.swift → Tests/SuwayomiKitTests/ModelMappingTests.swift
-- `CategoryFields` --references--> `ApolloAPI`  [EXTRACTED]
-  Sources/API/Fragments/CategoryFields.graphql.swift → Tests/SuwayomiKitTests/ModelMappingTests.swift
+- `Added` --references--> `SuwayomiClientConfig`  [INFERRED]
+  CHANGELOG.md → Sources/SuwayomiKit/Configuration.swift
+- `Added` --references--> `CacheClearResult`  [INFERRED]
+  CHANGELOG.md → Sources/SuwayomiKit/Models/ClientResults.swift
+- `Changed` --references--> `CacheClearResult`  [INFERRED]
+  CHANGELOG.md → Sources/SuwayomiKit/Models/ClientResults.swift
+- `Added` --references--> `IconPreview`  [INFERRED]
+  CHANGELOG.md → Sources/SuwayomiKit/Models/Previews.swift
+- `Changed` --references--> `IconPreview`  [INFERRED]
+  CHANGELOG.md → Sources/SuwayomiKit/Models/Previews.swift
 
 ## Import Cycles
 - None detected.
@@ -215,7 +204,7 @@
 - **Planned SuwayomiKit Client Features** — readme_async_await_client, readme_typed_models, readme_query_search_pagination, readme_page_thumbnail_fetching, readme_server_discovery, readme_swift6_strict_concurrency [EXTRACTED 1.00]
 - **Schema Download to Generated API Pipeline** — readme_suwayomi_server, readme_apollo_codegen_config, readme_schema_download_target, readme_graphql_codegen_layer, readme_api_target, readme_apollo_client [INFERRED 0.95]
 
-## Communities (170 total, 41 thin omitted)
+## Communities (157 total, 31 thin omitted)
 
 ### Community 0 - "SchemaMetadata.graphql.swift"
 Cohesion: 0.18
@@ -233,9 +222,9 @@ Nodes (14): AboutServerQuery, API Target, ApolloClient Setup, apollo-codegen-con
 Cohesion: 0.26
 Nodes (5): Date, JVM, OS, Platform, ServerInfo
 
-### Community 4 - "String"
-Cohesion: 0.19
-Nodes (10): Manga, MangaPreview, Source, SourcePreview, ContentWarning, mixed, nsfw, safe (+2 more)
+### Community 4 - "SuwayomiClientConfig"
+Cohesion: 0.15
+Nodes (6): SuwayomiClientConfig, .debugDescription, .description, .graphQLEndpoint, .managedHeaderNames, .redactedBaseURLString
 
 ### Community 5 - "AboutServer"
 Cohesion: 0.05
@@ -246,8 +235,8 @@ Cohesion: 0.12
 Nodes (11): SourceSummaryFields, .displayName, .fragmentDefinition, .__fulfilledFragments, .iconUrl, .id, .lang, .name (+3 more)
 
 ### Community 10 - "SuwayomiError"
-Cohesion: 0.16
-Nodes (9): Apollo, OperationError, SuwayomiError, .errorDescription, missingData, network, operation, server (+1 more)
+Cohesion: 0.10
+Nodes (13): OperationError, .errorDescription, SuwayomiError, cancelled, .errorDescription, http, invalidID, invalidURL (+5 more)
 
 ### Community 12 - "Category"
 Cohesion: 0.05
@@ -262,24 +251,24 @@ Cohesion: 0.07
 Nodes (25): Manga, .artist, .author, .bookmarkCount, .chaptersLastFetchedAt, .description, .downloadCount, .__fulfilledFragments (+17 more)
 
 ### Community 15 - "FilterChangeInput"
-Cohesion: 0.17
-Nodes (8): FilterChangeInput, .checkBoxState, .groupChange, .position, .selectState, .sortState, .textState, .triState
+Cohesion: 0.13
+Nodes (12): TriState, exclude, ignore, include, FilterChangeInput, .checkBoxState, .groupChange, .position (+4 more)
 
 ### Community 16 - "Node"
 Cohesion: 0.07
-Nodes (24): Categories, .__fulfilledFragments, .nodes, .__parentType, .__selections, .totalCount, Data, .categories (+16 more)
+Nodes (25): Categories, .__fulfilledFragments, .nodes, .__parentType, .__selections, .totalCount, Data, .categories (+17 more)
 
-### Community 17 - "Source"
-Cohesion: 0.13
-Nodes (13): Source, .contentWarning, .displayName, .__fulfilledFragments, .homeUrl, .iconUrl, .id, .isConfigurable (+5 more)
+### Community 17 - "Sendable"
+Cohesion: 0.10
+Nodes (18): Source, .contentWarning, .displayName, .__fulfilledFragments, .homeUrl, .iconUrl, .id, .isConfigurable (+10 more)
 
 ### Community 18 - "DequeueChapterDownload"
 Cohesion: 0.07
 Nodes (20): Data, .dequeueChapterDownload, .__fulfilledFragments, .__parentType, .__selections, DequeueChapterDownload, .downloadStatus, .__fulfilledFragments (+12 more)
 
 ### Community 19 - "EnqueueChapterDownload"
-Cohesion: 0.07
-Nodes (20): Data, .enqueueChapterDownload, .__fulfilledFragments, .__parentType, .__selections, DownloadStatus, .__fulfilledFragments, .__parentType (+12 more)
+Cohesion: 0.12
+Nodes (15): Data, .enqueueChapterDownload, .__fulfilledFragments, .__parentType, .__selections, DownloadStatus, .__fulfilledFragments, .__parentType (+7 more)
 
 ### Community 20 - "StartDownloader"
 Cohesion: 0.07
@@ -294,8 +283,8 @@ Cohesion: 0.07
 Nodes (19): ClearDownloader, .downloadStatus, .__fulfilledFragments, .__parentType, .__selections, ClearDownloaderMutation, .__variables, Data (+11 more)
 
 ### Community 23 - "Extension"
-Cohesion: 0.07
-Nodes (23): Data, .`extension`, .__fulfilledFragments, .__parentType, .__selections, Extension, .contentWarning, .__fulfilledFragments (+15 more)
+Cohesion: 0.06
+Nodes (24): Data, .`extension`, .__fulfilledFragments, .__parentType, .__selections, Extension, .contentWarning, .__fulfilledFragments (+16 more)
 
 ### Community 24 - "ClearCachedImagesInput"
 Cohesion: 0.08
@@ -318,19 +307,19 @@ Cohesion: 0.17
 Nodes (11): Manga, .downloadCount, .__fulfilledFragments, .id, .inLibrary, .__parentType, .__selections, .sourceId (+3 more)
 
 ### Community 29 - "Data"
-Cohesion: 0.18
-Nodes (10): Data, .__fulfilledFragments, .__parentType, .refreshToken, .__selections, RefreshToken, .accessToken, .__fulfilledFragments (+2 more)
+Cohesion: 0.10
+Nodes (15): Data, .__fulfilledFragments, .__parentType, .refreshToken, .__selections, RefreshToken, .accessToken, .__fulfilledFragments (+7 more)
 
 ### Community 30 - "Data"
-Cohesion: 0.18
-Nodes (10): Data, .__fulfilledFragments, .__parentType, .__selections, .updateStop, UpdateStop, .clientMutationId, .__fulfilledFragments (+2 more)
+Cohesion: 0.10
+Nodes (14): Data, .__fulfilledFragments, .__parentType, .__selections, .updateStop, UpdateStop, .clientMutationId, .__fulfilledFragments (+6 more)
 
 ### Community 31 - "Manga"
 Cohesion: 0.07
 Nodes (26): Manga, .artist, .author, .bookmarkCount, .categories, .chaptersLastFetchedAt, .description, .downloadCount (+18 more)
 
 ### Community 32 - "DownloaderState"
-Cohesion: 0.15
+Cohesion: 0.16
 Nodes (11): DownloaderState, started, stopped, DownloadItem, .id, DownloadQueueStatus, DownloadState, downloading (+3 more)
 
 ### Community 33 - "MangaConditionInput"
@@ -357,13 +346,17 @@ Nodes (17): ChapterConditionInput, .chapterNumber, .fetchedAt, .id, .isBookmarke
 Cohesion: 0.10
 Nodes (17): ExtensionConditionInput, .apkName, .apkUrl, .contentWarning, .extensionLib, .hasUpdate, .iconUrl, .isInstalled (+9 more)
 
+### Community 39 - "API"
+Cohesion: 0.16
+Nodes (5): API, Apollo, Foundation, SuwayomiKit, Testing
+
 ### Community 40 - "Manga"
-Cohesion: 0.15
+Cohesion: 0.14
 Nodes (11): Manga, .downloadCount, .__fulfilledFragments, .id, .inLibrary, .__parentType, .__selections, .sourceId (+3 more)
 
-### Community 41 - "ChapterOrderBy"
-Cohesion: 0.22
-Nodes (8): ChapterOrderBy, chapterNumber, fetchedAt, id, lastReadAt, name, sourceOrder, uploadDate
+### Community 41 - "EnumType"
+Cohesion: 0.10
+Nodes (15): ContentWarning, mixed, nsfw, safe, DownloaderState, started, stopped, DownloadState (+7 more)
 
 ### Community 42 - "Chapters"
 Cohesion: 0.09
@@ -389,13 +382,13 @@ Nodes (20): Chapter, .chapterNumber, .fetchedAt, .__fulfilledFragments, .id, .is
 Cohesion: 0.10
 Nodes (15): ExtensionFields, .contentWarning, .fragmentDefinition, .__fulfilledFragments, .hasUpdate, .iconUrl, .isInstalled, .isObsolete (+7 more)
 
-### Community 50 - "AuthMode"
-Cohesion: 0.17
-Nodes (7): AuthTokens, AuthMode, basicAuth, none, simpleLogin, uiLogin, ServerSettings
+### Community 50 - "MockNetworkTransport"
+Cohesion: 0.09
+Nodes (5): graphQLHTTPResponse(), GraphQLMockURLProtocol, .requestHandler, GraphQLTests, MockNetworkTransport
 
 ### Community 51 - "SourceFields"
-Cohesion: 0.10
-Nodes (14): SourceFields, .contentWarning, .displayName, .fragmentDefinition, .__fulfilledFragments, .homeUrl, .iconUrl, .id (+6 more)
+Cohesion: 0.06
+Nodes (23): SourceFields, .contentWarning, .displayName, .fragmentDefinition, .__fulfilledFragments, .homeUrl, .iconUrl, .id (+15 more)
 
 ### Community 52 - "StopDownloader"
 Cohesion: 0.07
@@ -413,25 +406,25 @@ Nodes (20): Chapter, .chapterNumber, .fetchedAt, .__fulfilledFragments, .id, .is
 Cohesion: 0.11
 Nodes (12): CategoryFields, .`default`, .fragmentDefinition, .__fulfilledFragments, .id, .includeInDownload, .includeInUpdate, .isDefaultCategory (+4 more)
 
-### Community 57 - "UpdateCategory"
+### Community 57 - "FetchSourceMangaInput"
 Cohesion: 0.14
-Nodes (12): Data, .__fulfilledFragments, .__parentType, .__selections, .updateCategory, Fragments, .categoryFields, UpdateCategory (+4 more)
+Nodes (11): FetchSourceMangaType, latest, popular, search, FetchSourceMangaInput, .clientMutationId, .filters, .page (+3 more)
 
 ### Community 58 - "UpdateChapter"
 Cohesion: 0.14
 Nodes (12): Data, .__fulfilledFragments, .__parentType, .__selections, .updateChapter, Fragments, .chapterFields, UpdateChapter (+4 more)
 
-### Community 59 - "UpdateExtension"
-Cohesion: 0.20
-Nodes (7): Data, .__fulfilledFragments, .__parentType, .__selections, .updateExtension, Fragments, .extensionFields
+### Community 59 - "ChapterOrderBy"
+Cohesion: 0.12
+Nodes (16): Added, Changelog, Fixed, Unreleased, ChapterOrder, ChapterOrderBy, chapterNumber, fetchedAt (+8 more)
 
 ### Community 60 - "UpdateMangaCategories"
 Cohesion: 0.14
 Nodes (12): Data, .__fulfilledFragments, .__parentType, .__selections, .updateMangaCategories, Fragments, .mangaFields, UpdateMangaCategories (+4 more)
 
 ### Community 62 - "PageInfo"
-Cohesion: 0.14
-Nodes (11): Fragments, .chapterFields, .pageInfoFields, PageInfo, .endCursor, .__fulfilledFragments, .hasNextPage, .hasPreviousPage (+3 more)
+Cohesion: 0.22
+Nodes (8): PageInfo, .endCursor, .__fulfilledFragments, .hasNextPage, .hasPreviousPage, .__parentType, .__selections, .startCursor
 
 ### Community 63 - "Extension"
 Cohesion: 0.12
@@ -442,43 +435,43 @@ Cohesion: 0.29
 Nodes (4): UpdateMangaInput, .clientMutationId, .id, .patch
 
 ### Community 65 - "DownloadStatus"
-Cohesion: 0.25
-Nodes (6): DownloadStatus, .__fulfilledFragments, .__parentType, .queue, .__selections, .state
+Cohesion: 0.16
+Nodes (9): DownloadStatus, .__fulfilledFragments, .__parentType, .queue, .__selections, .state, Fragments, .chapterFields (+1 more)
 
 ### Community 66 - "Node"
 Cohesion: 0.13
 Nodes (14): Node, .contentWarning, .__fulfilledFragments, .hasUpdate, .iconUrl, .isInstalled, .isObsolete, .lang (+6 more)
 
-### Community 67 - "MangaStatus"
-Cohesion: 0.22
-Nodes (8): MangaStatus, cancelled, completed, licensed, ongoing, onHiatus, publishingFinished, unknown
+### Community 67 - "UpdateExtensionMutation"
+Cohesion: 0.18
+Nodes (4): Changed, UpdateExtensionMutation, .__variables, SuwayomiClient
 
 ### Community 68 - "PageInfoFields"
 Cohesion: 0.14
 Nodes (9): PageInfoFields, .endCursor, .fragmentDefinition, .__fulfilledFragments, .hasNextPage, .hasPreviousPage, .__parentType, .__selections (+1 more)
 
-### Community 69 - "EnumType"
-Cohesion: 0.22
-Nodes (6): DownloaderState, started, stopped, UpdateStrategy, alwaysUpdate, onlyFetchOnce
+### Community 69 - "MangaWithChapters"
+Cohesion: 0.31
+Nodes (3): CacheClearResult, MangaWithChapters, SourceMangaPage
 
-### Community 70 - "Login"
-Cohesion: 0.18
-Nodes (11): Data, .__fulfilledFragments, .login, .__parentType, .__selections, Login, .accessToken, .__fulfilledFragments (+3 more)
+### Community 70 - "SuwayomiClient"
+Cohesion: 0.14
+Nodes (7): SuwayomiClient, .baseURL, .debugDescription, .description, .headers, .isAuthenticated, .token
 
 ### Community 71 - "UpdateManga"
 Cohesion: 0.14
 Nodes (12): Data, .__fulfilledFragments, .__parentType, .__selections, .updateManga, Fragments, .mangaFields, UpdateManga (+4 more)
 
 ### Community 72 - "CreateCategoryInput"
-Cohesion: 0.19
-Nodes (7): CreateCategoryInput, .clientMutationId, .`default`, .includeInDownload, .includeInUpdate, .name, .order
+Cohesion: 0.14
+Nodes (9): CreateCategoryMutation, .__variables, CreateCategoryInput, .clientMutationId, .`default`, .includeInDownload, .includeInUpdate, .name (+1 more)
 
-### Community 73 - "FetchSourceMangaInput"
-Cohesion: 0.19
-Nodes (7): FetchSourceMangaInput, .clientMutationId, .filters, .page, .query, .source, .type
+### Community 73 - "MangaStatus"
+Cohesion: 0.12
+Nodes (12): MangaStatus, cancelled, completed, licensed, ongoing, onHiatus, publishingFinished, unknown (+4 more)
 
 ### Community 74 - "Category"
-Cohesion: 0.14
+Cohesion: 0.13
 Nodes (11): Category, .`default`, .__fulfilledFragments, .id, .includeInDownload, .includeInUpdate, .isDefaultCategory, .name (+3 more)
 
 ### Community 75 - "Login"
@@ -490,11 +483,11 @@ Cohesion: 0.17
 Nodes (6): Data, .downloadStatus, .__fulfilledFragments, .__parentType, .__selections, GetDownloadStatusQuery
 
 ### Community 78 - "Category"
-Cohesion: 0.14
-Nodes (11): Category, .`default`, .__fulfilledFragments, .id, .includeInDownload, .includeInUpdate, .isDefaultCategory, .name (+3 more)
+Cohesion: 0.07
+Nodes (20): Category, .`default`, .__fulfilledFragments, .id, .includeInDownload, .includeInUpdate, .isDefaultCategory, .name (+12 more)
 
 ### Community 79 - "Queue"
-Cohesion: 0.15
+Cohesion: 0.14
 Nodes (10): Queue, .chapter, .__fulfilledFragments, .manga, .__parentType, .position, .progress, .__selections (+2 more)
 
 ### Community 80 - "Data"
@@ -506,8 +499,8 @@ Cohesion: 0.14
 Nodes (11): Node, .`default`, .__fulfilledFragments, .id, .includeInDownload, .includeInUpdate, .isDefaultCategory, .name (+3 more)
 
 ### Community 82 - "Settings"
-Cohesion: 0.09
-Nodes (17): Data, .__fulfilledFragments, .__parentType, .__selections, .settings, GetSettingsQuery, Settings, .authMode (+9 more)
+Cohesion: 0.10
+Nodes (16): Data, .__fulfilledFragments, .__parentType, .__selections, .settings, Settings, .authMode, .authUsername (+8 more)
 
 ### Community 83 - "Node"
 Cohesion: 0.20
@@ -522,28 +515,32 @@ Cohesion: 0.18
 Nodes (8): Data, .fetchMangaAndChapters, .__fulfilledFragments, .__parentType, .__selections, Fragments, .chapterFields, .mangaFields
 
 ### Community 86 - "ModelTests"
-Cohesion: 0.13
-Nodes (4): SuwayomiKit, Testing, ModelTests, makeManga()
+Cohesion: 0.11
+Nodes (3): AuthTokens, ModelTests, makeManga()
 
-### Community 87 - "Category"
-Cohesion: 0.14
-Nodes (11): Category, .`default`, .__fulfilledFragments, .id, .includeInDownload, .includeInUpdate, .isDefaultCategory, .name (+3 more)
+### Community 87 - "FragmentContainer"
+Cohesion: 0.05
+Nodes (29): Category, .`default`, .__fulfilledFragments, .id, .includeInDownload, .includeInUpdate, .isDefaultCategory, .name (+21 more)
 
-### Community 88 - "CreateCategory"
+### Community 88 - "Login"
+Cohesion: 0.18
+Nodes (11): Data, .__fulfilledFragments, .login, .__parentType, .__selections, Login, .accessToken, .__fulfilledFragments (+3 more)
+
+### Community 89 - "DeleteDownloadedChapter"
 Cohesion: 0.20
-Nodes (7): CreateCategory, .category, .__fulfilledFragments, .__parentType, .__selections, Fragments, .categoryFields
+Nodes (7): DeleteDownloadedChapter, .chapters, .__fulfilledFragments, .__parentType, .__selections, Fragments, .chapterFields
 
 ### Community 90 - "Data"
 Cohesion: 0.20
-Nodes (7): Data, .__fulfilledFragments, .__parentType, .__selections, .source, Fragments, .sourceFields
+Nodes (7): Data, .__fulfilledFragments, .__parentType, .__selections, .updateExtension, Fragments, .extensionFields
 
 ### Community 91 - "Data"
 Cohesion: 0.20
 Nodes (7): Data, .chapter, .__fulfilledFragments, .__parentType, .__selections, Fragments, .chapterFields
 
 ### Community 92 - "String"
-Cohesion: 0.15
-Nodes (13): Manga, MangaStatus, cancelled, completed, licensed, ongoing, onHiatus, publishingFinished (+5 more)
+Cohesion: 0.22
+Nodes (9): Manga, MangaSummary, UpdateStrategy, alwaysUpdate, onlyFetchOnce, Extension, IconPreview, MangaPreview (+1 more)
 
 ### Community 93 - "FetchMangaAndChaptersInput"
 Cohesion: 0.24
@@ -557,17 +554,21 @@ Nodes (5): SourceConditionInput, .contentWarning, .id, .lang, .name
 Cohesion: 0.24
 Nodes (5): UpdateCategoryPatchInput, .`default`, .includeInDownload, .includeInUpdate, .name
 
-### Community 97 - "DataDict"
+### Community 96 - "mockHTTPResponse"
+Cohesion: 0.09
+Nodes (6): OriginGuardTaskDelegate, mockHTTPResponse(), MockURLProtocol, .requestHandler, NetworkTests, RequestBox
+
+### Community 97 - "UpdateChapterInput"
 Cohesion: 0.29
-Nodes (3): Fragments, .chapterFields, .mangaSummaryFields
+Nodes (4): UpdateChapterInput, .clientMutationId, .id, .patch
 
 ### Community 98 - "Data"
 Cohesion: 0.20
 Nodes (8): Data, .extensions, .__fulfilledFragments, .__parentType, .__selections, Fragments, .extensionFields, .pageInfoFields
 
 ### Community 99 - "PagedResult"
-Cohesion: 0.10
-Nodes (8): SourceMangaType, latest, popular, search, PagedResult, .endIndex, .startIndex, PageInfo
+Cohesion: 0.22
+Nodes (4): PagedResult, .endIndex, .startIndex, PageInfo
 
 ### Community 100 - "Chapters"
 Cohesion: 0.20
@@ -589,13 +590,13 @@ Nodes (4): FetchChapterPagesInput, .chapterId, .clientMutationId, .format
 Cohesion: 0.25
 Nodes (5): Category, CategoryIncludeOrExclude, exclude, include, unset
 
-### Community 105 - "UpdateChapterInput"
-Cohesion: 0.29
-Nodes (4): UpdateChapterInput, .clientMutationId, .id, .patch
-
-### Community 106 - "UpdateChapterPatchInput"
+### Community 105 - "UpdateChapterPatchInput"
 Cohesion: 0.29
 Nodes (4): UpdateChapterPatchInput, .isBookmarked, .isRead, .lastPageRead
+
+### Community 106 - "AuthMode"
+Cohesion: 0.27
+Nodes (6): AuthMode, basicAuth, none, simpleLogin, uiLogin, ServerSettings
 
 ### Community 107 - "UpdateMangaCategoriesInput"
 Cohesion: 0.29
@@ -626,20 +627,24 @@ Cohesion: 0.33
 Nodes (3): DeleteDownloadedChapterInput, .clientMutationId, .id
 
 ### Community 114 - "UpdateExtensionPatchInput"
-Cohesion: 0.09
-Nodes (10): UpdateExtensionMutation, .__variables, UpdateExtensionInput, .clientMutationId, .id, .patch, UpdateExtensionPatchInput, .install (+2 more)
+Cohesion: 0.16
+Nodes (8): UpdateExtensionInput, .clientMutationId, .id, .patch, UpdateExtensionPatchInput, .install, .uninstall, .update
 
 ### Community 115 - "PageInfo"
 Cohesion: 0.20
 Nodes (8): PageInfo, .endCursor, .__fulfilledFragments, .hasNextPage, .hasPreviousPage, .__parentType, .__selections, .startCursor
 
-### Community 116 - "RefreshTokenInput"
-Cohesion: 0.36
-Nodes (3): RefreshTokenInput, .clientMutationId, .refreshToken
+### Community 116 - "InputObject"
+Cohesion: 0.31
+Nodes (3): SortSelectionInput, .ascending, .index
 
-### Community 118 - "UpdateCategoryInput"
-Cohesion: 0.29
-Nodes (4): UpdateCategoryInput, .clientMutationId, .id, .patch
+### Community 118 - "ChapterOrderBy"
+Cohesion: 0.22
+Nodes (8): ChapterOrderBy, chapterNumber, fetchedAt, id, lastReadAt, name, sourceOrder, uploadDate
+
+### Community 121 - "MangaStatus"
+Cohesion: 0.22
+Nodes (8): MangaStatus, cancelled, completed, licensed, ongoing, onHiatus, publishingFinished, unknown
 
 ### Community 123 - "DataDict"
 Cohesion: 0.29
@@ -649,17 +654,17 @@ Nodes (3): Fragments, .pageInfoFields, .sourceSummaryFields
 Cohesion: 0.25
 Nodes (6): FetchChapterPages, .chapter, .__fulfilledFragments, .pages, .__parentType, .__selections
 
-### Community 126 - "SortOrder"
-Cohesion: 0.25
-Nodes (7): SortOrder, asc, ascNullsFirst, ascNullsLast, desc, descNullsFirst, descNullsLast
+### Community 126 - "ChapterOrderInput"
+Cohesion: 0.15
+Nodes (10): SortOrder, asc, ascNullsFirst, ascNullsLast, desc, descNullsFirst, descNullsLast, ChapterOrderInput (+2 more)
 
 ### Community 128 - "FetchSourceManga"
 Cohesion: 0.25
 Nodes (6): FetchSourceManga, .__fulfilledFragments, .hasNextPage, .mangas, .__parentType, .__selections
 
 ### Community 130 - "Data"
-Cohesion: 0.29
-Nodes (5): Data, .chapters, .__fulfilledFragments, .__parentType, .__selections
+Cohesion: 0.15
+Nodes (8): Data, .chapters, .__fulfilledFragments, .__parentType, .__selections, Fragments, .chapterFields, .pageInfoFields
 
 ### Community 133 - "Categories"
 Cohesion: 0.29
@@ -673,21 +678,21 @@ Nodes (5): Data, .__fulfilledFragments, .manga, .__parentType, .__selections
 Cohesion: 0.33
 Nodes (3): Fragments, .categoryFields, .mangaFields
 
-### Community 136 - "ChapterOrderInput"
-Cohesion: 0.36
-Nodes (3): ChapterOrderInput, .by, .byType
+### Community 138 - "GraphQLMutation"
+Cohesion: 0.17
+Nodes (5): EnqueueChapterDownloadMutation, .__variables, EnqueueChapterDownloadInput, .clientMutationId, .id
 
 ### Community 141 - "Data"
-Cohesion: 0.40
+Cohesion: 0.33
 Nodes (5): Data, .deleteDownloadedChapter, .__fulfilledFragments, .__parentType, .__selections
 
-### Community 144 - "SortSelectionInput"
-Cohesion: 0.31
-Nodes (3): SortSelectionInput, .ascending, .index
-
-### Community 145 - "UpdateExtension"
+### Community 144 - "UpdateExtension"
 Cohesion: 0.33
 Nodes (5): UpdateExtension, .`extension`, .__fulfilledFragments, .__parentType, .__selections
+
+### Community 145 - "AuthMode"
+Cohesion: 0.33
+Nodes (5): AuthMode, basicAuth, none, simpleLogin, uiLogin
 
 ### Community 148 - "Data"
 Cohesion: 0.33
@@ -697,61 +702,33 @@ Nodes (5): Data, .__fulfilledFragments, .__parentType, .__selections, .sources
 Cohesion: 0.40
 Nodes (4): IncludeOrExclude, exclude, include, unset
 
-### Community 154 - "Data"
-Cohesion: 0.33
-Nodes (5): Data, .createCategory, .__fulfilledFragments, .__parentType, .__selections
+### Community 154 - "FragmentContainer"
+Cohesion: 0.14
+Nodes (12): CreateCategory, .category, .__fulfilledFragments, .__parentType, .__selections, Data, .createCategory, .__fulfilledFragments (+4 more)
 
 ### Community 156 - "Data"
 Cohesion: 0.33
 Nodes (5): Data, .fetchSourceManga, .__fulfilledFragments, .__parentType, .__selections
 
-### Community 159 - "DeleteDownloadedChapter"
-Cohesion: 0.33
-Nodes (5): DeleteDownloadedChapter, .chapters, .__fulfilledFragments, .__parentType, .__selections
-
-### Community 162 - "Data"
-Cohesion: 0.33
-Nodes (5): Data, .category, .__fulfilledFragments, .__parentType, .__selections
-
-### Community 163 - "AuthMode"
-Cohesion: 0.33
-Nodes (5): AuthMode, basicAuth, none, simpleLogin, uiLogin
-
-### Community 164 - "ContentWarning"
-Cohesion: 0.40
-Nodes (4): ContentWarning, mixed, nsfw, safe
-
-### Community 165 - "DownloadState"
-Cohesion: 0.33
-Nodes (5): DownloadState, downloading, error, finished, queued
-
-### Community 168 - "FetchSourceMangaType"
-Cohesion: 0.40
-Nodes (4): FetchSourceMangaType, latest, popular, search
-
-### Community 169 - "TriState"
-Cohesion: 0.40
-Nodes (4): TriState, exclude, ignore, include
-
 ## Knowledge Gaps
-- **1192 isolated node(s):** `PackageDescription`, `.fragmentDefinition`, `.__parentType`, `.__selections`, `.__fulfilledFragments` (+1187 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1416 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **41 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **1218 isolated node(s):** `PackageDescription`, `.fragmentDefinition`, `.__parentType`, `.__selections`, `.__fulfilledFragments` (+1213 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1490 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **31 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `ApolloAPI` connect `ApolloAPI` to `SchemaMetadata.graphql.swift`, `MangaSummaryFields`, `AboutServer`, `SourceSummaryFields`, `Category`, `Category`, `Manga`, `FilterChangeInput`, `Node`, `Source`, `DequeueChapterDownload`, `EnqueueChapterDownload`, `StartDownloader`, `MangaFields`, `ClearDownloader`, `Extension`, `ClearCachedImagesInput`, `JobsInfo`, `ChapterFields`, `Manga`, `Manga`, `Data`, `Data`, `Manga`, `MangaConditionInput`, `Manga`, `Node`, `JobsInfo`, `ChapterConditionInput`, `ExtensionConditionInput`, `Manga`, `ChapterOrderBy`, `Chapters`, `Chapter`, `Chapter`, `Chapter`, `Chapter`, `.mutation`, `ExtensionFields`, `SourceFields`, `StopDownloader`, `Node`, `Chapter`, `CategoryFields`, `UpdateCategory`, `UpdateChapter`, `UpdateExtension`, `UpdateMangaCategories`, `PageInfo`, `Extension`, `UpdateMangaInput`, `DownloadStatus`, `Node`, `MangaStatus`, `PageInfoFields`, `EnumType`, `Login`, `UpdateManga`, `CreateCategoryInput`, `FetchSourceMangaInput`, `Category`, `Login`, `GraphQLQuery`, `Category`, `Queue`, `Data`, `Node`, `Settings`, `Node`, `FragmentContainer`, `Data`, `ModelTests`, `Category`, `CreateCategory`, `Data`, `Data`, `FetchMangaAndChaptersInput`, `SourceConditionInput`, `UpdateCategoryPatchInput`, `Data`, `Chapters`, `Mangas`, `Sources`, `FetchChapterPagesInput`, `UpdateChapterInput`, `UpdateChapterPatchInput`, `UpdateMangaCategoriesInput`, `UpdateMangaCategoriesPatchInput`, `FetchMangaAndChapters`, `Extensions`, `PageInfo`, `PageInfo`, `DeleteDownloadedChapterInput`, `UpdateExtensionPatchInput`, `PageInfo`, `RefreshTokenInput`, `InputObject`, `UpdateCategoryInput`, `GetChaptersQuery`, `GetLibraryMangasQuery`, `GetCategoryQuery`, `GetSourcesQuery`, `FetchChapterPages`, `SortOrder`, `UpdateStopInput`, `FetchSourceManga`, `GetChapterQuery`, `Data`, `GetExtensionsQuery`, `GetMangaQuery`, `Categories`, `Data`, `ChapterOrderInput`, `GraphQLMutation`, `GetSourceQuery`, `DeleteDownloadedChapterMutation`, `Data`, `FetchChapterPagesMutation`, `FetchMangaAndChaptersMutation`, `SortSelectionInput`, `UpdateExtension`, `UpdateChapterMutation`, `UpdateMangaCategoriesMutation`, `Data`, `UpdateMangaMutation`, `GetLibraryUpdateStatusQuery`, `IncludeOrExclude`, `SchemaConfiguration`, `CreateCategoryMutation`, `Data`, `FetchSourceMangaMutation`, `Data`, `UpdateCategoryMutation`, `DeleteDownloadedChapter`, `UpdateStopMutation`, `Data`, `AuthMode`, `ContentWarning`, `DownloadState`, `FetchSourceMangaType`, `TriState`?**
-  _High betweenness centrality (0.559) - this node is a cross-community bridge._
-- **Are the 18 inferred relationships involving `SuwayomiClient` (e.g. with `.testAbsoluteURLResolution()` and `.testAuthenticatedCopy()`) actually correct?**
-  _`SuwayomiClient` has 18 INFERRED edges - model-reasoned connections that need verification._
+- **Why does `ApolloAPI` connect `ApolloAPI` to `SchemaMetadata.graphql.swift`, `MangaSummaryFields`, `AboutServer`, `SourceSummaryFields`, `Category`, `Category`, `Manga`, `FilterChangeInput`, `Node`, `Sendable`, `DequeueChapterDownload`, `EnqueueChapterDownload`, `StartDownloader`, `MangaFields`, `ClearDownloader`, `Extension`, `ClearCachedImagesInput`, `JobsInfo`, `ChapterFields`, `Manga`, `Manga`, `Data`, `Data`, `Manga`, `MangaConditionInput`, `Manga`, `Node`, `JobsInfo`, `ChapterConditionInput`, `ExtensionConditionInput`, `API`, `Manga`, `EnumType`, `Chapters`, `Chapter`, `Chapter`, `Chapter`, `Chapter`, `ExtensionFields`, `SourceFields`, `StopDownloader`, `Node`, `Chapter`, `CategoryFields`, `FetchSourceMangaInput`, `UpdateChapter`, `UpdateMangaCategories`, `PageInfo`, `Extension`, `UpdateMangaInput`, `DownloadStatus`, `Node`, `UpdateExtensionMutation`, `PageInfoFields`, `UpdateManga`, `CreateCategoryInput`, `Category`, `Login`, `GraphQLQuery`, `Category`, `Queue`, `Data`, `Node`, `Settings`, `Node`, `FragmentContainer`, `Data`, `FragmentContainer`, `Login`, `DeleteDownloadedChapter`, `Data`, `Data`, `FetchMangaAndChaptersInput`, `SourceConditionInput`, `UpdateCategoryPatchInput`, `UpdateChapterInput`, `Data`, `Chapters`, `Mangas`, `Sources`, `FetchChapterPagesInput`, `UpdateChapterPatchInput`, `UpdateMangaCategoriesInput`, `UpdateMangaCategoriesPatchInput`, `FetchMangaAndChapters`, `Extensions`, `PageInfo`, `PageInfo`, `DeleteDownloadedChapterInput`, `UpdateExtensionPatchInput`, `PageInfo`, `InputObject`, `InputObject`, `ChapterOrderBy`, `GetChaptersQuery`, `GetLibraryMangasQuery`, `MangaStatus`, `GetSourcesQuery`, `FetchChapterPages`, `ChapterOrderInput`, `GetChapterQuery`, `FetchSourceManga`, `Data`, `GetExtensionsQuery`, `GetMangaQuery`, `Categories`, `Data`, `FetchSourceMangaMutation`, `GraphQLMutation`, `UpdateChapterMutation`, `DeleteDownloadedChapterMutation`, `Data`, `FetchChapterPagesMutation`, `FetchMangaAndChaptersMutation`, `UpdateExtension`, `AuthMode`, `UpdateMangaCategoriesMutation`, `Data`, `UpdateMangaMutation`, `.query`, `IncludeOrExclude`, `SchemaConfiguration`, `FragmentContainer`, `Data`?**
+  _High betweenness centrality (0.517) - this node is a cross-community bridge._
 - **What connects `PackageDescription`, `.fragmentDefinition`, `.__parentType` to the rest of the system?**
-  _1192 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _1218 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `MangaSummaryFields` be split into smaller, more focused modules?**
   _Cohesion score 0.1111111111111111 - nodes in this community are weakly interconnected._
-- **Why does `API` connect `API` to `MangaSummaryFields`, `Sendable`, `String`, `AboutServer`, `SourceSummaryFields`, `Category`, `Category`, `Manga`, `Node`, `Source`, `DequeueChapterDownload`, `EnqueueChapterDownload`, `StartDownloader`, `MangaFields`, `ClearDownloader`, `Extension`, `ClearCachedImagesInput`, `JobsInfo`, `ChapterFields`, `Manga`, `Manga`, `Data`, `Data`, `Manga`, `DownloaderState`, `Manga`, `Node`, `JobsInfo`, `Manga`, `Chapters`, `Chapter`, `Chapter`, `Chapter`, `Chapter`, `ExtensionFields`, `AuthMode`, `SourceFields`, `StopDownloader`, `Node`, `Chapter`, `CategoryFields`, `UpdateCategory`, `UpdateChapter`, `UpdateExtension`, `UpdateMangaCategories`, `PageInfo`, `Extension`, `DownloadStatus`, `Node`, `PageInfoFields`, `Login`, `UpdateManga`, `Category`, `GraphQLQuery`, `Category`, `Queue`, `Data`, `Node`, `Settings`, `Node`, `FragmentContainer`, `Data`, `ModelTests`, `Category`, `CreateCategory`, `Data`, `Data`, `String`, `Data`, `PagedResult`, `Chapters`, `Mangas`, `Sources`, `CategoryIncludeOrExclude`, `FetchMangaAndChapters`, `Extensions`, `PageInfo`, `PageInfo`, `PageInfo`, `FetchChapterPages`, `FetchSourceManga`, `Data`, `Categories`, `Data`, `Chapter`, `Data`, `UpdateExtension`, `Data`, `Data`, `Data`, `DeleteDownloadedChapter`, `Data`, `Extension`, `LibraryJobsInfo`?**
-  _High betweenness centrality (0.316) - this node is a cross-community bridge._
+- **Why does `API` connect `API` to `MangaSummaryFields`, `Sendable`, `AboutServer`, `SourceSummaryFields`, `Category`, `Category`, `Manga`, `Node`, `Sendable`, `DequeueChapterDownload`, `EnqueueChapterDownload`, `StartDownloader`, `MangaFields`, `ClearDownloader`, `Extension`, `ClearCachedImagesInput`, `JobsInfo`, `ChapterFields`, `Manga`, `Manga`, `Data`, `Data`, `Manga`, `DownloaderState`, `Manga`, `Node`, `JobsInfo`, `Manga`, `Chapters`, `Chapter`, `Chapter`, `Chapter`, `Chapter`, `ExtensionFields`, `SourceFields`, `StopDownloader`, `Node`, `Chapter`, `CategoryFields`, `UpdateChapter`, `ChapterOrderBy`, `UpdateMangaCategories`, `PageInfo`, `Extension`, `DownloadStatus`, `Node`, `PageInfoFields`, `UpdateManga`, `MangaStatus`, `Category`, `GraphQLQuery`, `Category`, `Queue`, `Data`, `Node`, `Settings`, `Node`, `FragmentContainer`, `Data`, `FragmentContainer`, `Login`, `DeleteDownloadedChapter`, `Data`, `Data`, `String`, `Data`, `PagedResult`, `Chapters`, `Mangas`, `Sources`, `CategoryIncludeOrExclude`, `AuthMode`, `FetchMangaAndChapters`, `Extensions`, `PageInfo`, `PageInfo`, `PageInfo`, `FetchChapterPages`, `FetchSourceManga`, `Data`, `Categories`, `Data`, `Chapter`, `Data`, `UpdateExtension`, `Data`, `FragmentContainer`, `Data`, `Extension`, `LibraryJobsInfo`?**
+  _High betweenness centrality (0.334) - this node is a cross-community bridge._
+- **Should `SuwayomiClientConfig` be split into smaller, more focused modules?**
+  _Cohesion score 0.1477832512315271 - nodes in this community are weakly interconnected._
+- **Why does `Source` connect `Sendable` to `DownloaderState`, `mockHTTPResponse`, `API`, `LibraryJobsInfo`, `ApolloAPI`, `SourceFields`, `.query`, `ModelTests`, `String`?**
+  _High betweenness centrality (0.072) - this node is a cross-community bridge._
 - **Should `AboutServer` be split into smaller, more focused modules?**
-  _Cohesion score 0.05187074829931973 - nodes in this community are weakly interconnected._
-- **Why does `SuwayomiClient` connect `SuwayomiClient` to `DownloaderState`, `UpdateStopMutation`, `MockURLProtocol`, `PagedResult`, `String`, `AboutServer`, `API`, `.mutation`, `Category`, `.mutation`, `UpdateExtensionPatchInput`, `Settings`, `GetLibraryUpdateStatusQuery`, `.fetchData`, `JobsInfo`, `.fetchMangaAndChapters`, `.chapters`?**
-  _High betweenness centrality (0.055) - this node is a cross-community bridge._
+  _Cohesion score 0.05319148936170213 - nodes in this community are weakly interconnected._

@@ -2,12 +2,12 @@ import API
 import Foundation
 
 extension SuwayomiClient {
-    public func aboutServer() async throws(SuwayomiError) -> ServerInfo {
+    public func serverInfo() async throws(SuwayomiError) -> ServerInfo {
         let data = try await query(AboutServerQuery())
         return ServerInfo(data.aboutServer)
     }
 
-    public func settings() async throws(SuwayomiError) -> ServerSettings {
+    public func serverSettings() async throws(SuwayomiError) -> ServerSettings {
         let data = try await query(GetSettingsQuery())
         return ServerSettings(data.settings)
     }
@@ -16,7 +16,7 @@ extension SuwayomiClient {
         pages: Bool = false,
         thumbnails: Bool = false,
         downloadedThumbnails: Bool = false
-    ) async throws(SuwayomiError) -> (cachedPages: Bool, cachedThumbnails: Bool, downloadedThumbnails: Bool) {
+    ) async throws(SuwayomiError) -> CacheClearResult {
         let data = try await mutation(
             ClearCachedImagesMutation(
                 input: .init(
@@ -27,7 +27,7 @@ extension SuwayomiClient {
             )
         )
         let payload = data.clearCachedImages
-        return (
+        return CacheClearResult(
             cachedPages: payload.cachedPages ?? false,
             cachedThumbnails: payload.cachedThumbnails ?? false,
             downloadedThumbnails: payload.downloadedThumbnails ?? false
@@ -47,7 +47,7 @@ extension SuwayomiClient {
         )
     }
 
-    public func refreshToken(refreshToken: String) async throws(SuwayomiError) -> AuthTokens {
+    public func refreshAccessToken(using refreshToken: String) async throws(SuwayomiError) -> AuthTokens {
         let data = try await mutation(
             RefreshTokenMutation(
                 input: .init(refreshToken: refreshToken)

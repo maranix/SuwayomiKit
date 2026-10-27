@@ -21,8 +21,8 @@ extension SuwayomiClient {
         let data = try await query(
             GetExtensionsQuery(
                 condition: condition,
-                first: first.map { .some(Int32($0)) } ?? .none,
-                offset: offset.map { .some(Int32($0)) } ?? .none
+                first: try graphQLID(first),
+                offset: try graphQLID(offset)
             )
         )
         let extensions = data.extensions.nodes.map { Extension($0.fragments.extensionFields) }
@@ -30,25 +30,31 @@ extension SuwayomiClient {
         return PagedResult(items: extensions, pageInfo: pageInfo, totalCount: data.extensions.totalCount)
     }
 
-    public func `extension`(pkgName: String) async throws(SuwayomiError) -> Extension {
-        let data = try await query(GetExtensionQuery(pkgName: pkgName))
+    public func extensionDetails(packageName: String) async throws(SuwayomiError) -> Extension {
+        let data = try await query(GetExtensionQuery(pkgName: packageName))
         return Extension(data.extension.fragments.extensionFields)
     }
 
-    public func installExtension(pkgName: String) async throws(SuwayomiError) -> Extension? {
+    public func installExtension(packageName: String) async throws(SuwayomiError) -> Extension {
         let patch = UpdateExtensionPatchInput(install: .some(true))
-        let data = try await mutation(UpdateExtensionMutation(input: .init(id: pkgName, patch: patch)))
-        return data.updateExtension?.extension.map { Extension($0.fragments.extensionFields) }
+        let data = try await mutation(UpdateExtensionMutation(input: .init(id: packageName, patch: patch)))
+        guard let updated = data.updateExtension?.extension else {
+            throw SuwayomiError.missingData
+        }
+        return Extension(updated.fragments.extensionFields)
     }
 
-    public func updateExtension(pkgName: String) async throws(SuwayomiError) -> Extension? {
+    public func updateExtension(packageName: String) async throws(SuwayomiError) -> Extension {
         let patch = UpdateExtensionPatchInput(update: .some(true))
-        let data = try await mutation(UpdateExtensionMutation(input: .init(id: pkgName, patch: patch)))
-        return data.updateExtension?.extension.map { Extension($0.fragments.extensionFields) }
+        let data = try await mutation(UpdateExtensionMutation(input: .init(id: packageName, patch: patch)))
+        guard let updated = data.updateExtension?.extension else {
+            throw SuwayomiError.missingData
+        }
+        return Extension(updated.fragments.extensionFields)
     }
 
-    public func uninstallExtension(pkgName: String) async throws(SuwayomiError) {
+    public func uninstallExtension(packageName: String) async throws(SuwayomiError) {
         let patch = UpdateExtensionPatchInput(uninstall: .some(true))
-        _ = try await mutation(UpdateExtensionMutation(input: .init(id: pkgName, patch: patch)))
+        _ = try await mutation(UpdateExtensionMutation(input: .init(id: packageName, patch: patch)))
     }
 }

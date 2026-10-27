@@ -1,10 +1,23 @@
 import Foundation
 import Testing
-
 @testable import SuwayomiKit
 
 final class MockURLProtocol: URLProtocol, @unchecked Sendable {
-    nonisolated(unsafe) static var requestHandler: ((URLRequest) throws -> (HTTPURLResponse, Data))?
+    private static let lock = NSLock()
+    nonisolated(unsafe) private static var _requestHandler: ((URLRequest) throws -> (HTTPURLResponse, Data))?
+
+    static var requestHandler: ((URLRequest) throws -> (HTTPURLResponse, Data))? {
+        get {
+            lock.lock()
+            defer { lock.unlock() }
+            return _requestHandler
+        }
+        set {
+            lock.lock()
+            defer { lock.unlock() }
+            _requestHandler = newValue
+        }
+    }
 
     override static func canInit(with request: URLRequest) -> Bool {
         true
@@ -37,10 +50,31 @@ final class MockURLProtocol: URLProtocol, @unchecked Sendable {
     override func stopLoading() {}
 }
 
+private final class RequestBox: @unchecked Sendable {
+    var request: URLRequest?
+}
+
+private func mockHTTPResponse(
+    for request: URLRequest,
+    statusCode: Int,
+    headers: [String: String]? = nil
+) throws -> HTTPURLResponse {
+    guard let url = request.url,
+        let response = HTTPURLResponse(
+            url: url,
+            statusCode: statusCode,
+            httpVersion: nil,
+            headerFields: headers
+        )
+    else {
+        throw URLError(.badServerResponse)
+    }
+    return response
+}
+
 @Suite("Network & Media Tests", .serialized)
 struct NetworkTests {
     private func makeMockSession() -> URLSession {
-        URLProtocol.registerClass(MockURLProtocol.self)
         let configuration = URLSessionConfiguration.ephemeral
         configuration.protocolClasses = [MockURLProtocol.self]
         return URLSession(configuration: configuration)
@@ -49,111 +83,215 @@ struct NetworkTests {
     @Test("fetchData succeeds with 200 OK and returns payload")
     func testFetchDataSuccess() async throws {
         let session = makeMockSession()
-        let expectedBytes = Data([0x89, 0x50, 0x4E, 0x47])  // PNG header
+        let expectedBytes = Data([0x89, 0x50, 0x4E, 0x47])
 
         MockURLProtocol.requestHandler = { request in
-            let response = HTTPURLResponse(
-                url: request.url!,
+            let response = try mockHTTPResponse(
+                for: request,
                 statusCode: 200,
-                httpVersion: nil,
-                headerFields: ["Content-Type": "image/png"]
-            )!
+                headers: ["Content-Type": "image/png"]
+            )
             return (response, expectedBytes)
         }
+        defer { MockURLProtocol.requestHandler = nil }
 
-        let client = SuwayomiClient(
-            baseURL: URL(string: "http://localhost:4567")!,
-            urlSession: session
-        )
+        let baseURL = try #require(URL(string: "http://localhost:4567"))
+        let client = SuwayomiClient(baseURL: baseURL, urlSession: session)
 
-        let data = try await client.fetchData(from: URL(string: "http://localhost:4567/api/v1/page/0")!)
+        let data = try await client.fetchData(from: baseURL.appendingPathComponent("api/v1/page/0"))
         #expect(data == expectedBytes)
     }
 
-    @Test("fetchData injects Authorization and custom headers")
+    @Test("fetchData injects Authorization and custom headers for same origin")
     func testFetchDataHeaderInjection() async throws {
         let session = makeMockSession()
         nonisolated(unsafe) var capturedHeaders: [String: String]?
 
         MockURLProtocol.requestHandler = { request in
             capturedHeaders = request.allHTTPHeaderFields
-            let response = HTTPURLResponse(
-                url: request.url!,
-                statusCode: 200,
-                httpVersion: nil,
-                headerFields: nil
-            )!
-            return (response, Data())
+            return (try mockHTTPResponse(for: request, statusCode: 200), Data())
         }
+        defer { MockURLProtocol.requestHandler = nil }
 
+        let baseURL = try #require(URL(string: "http://localhost:4567"))
         let client = SuwayomiClient(
-            baseURL: URL(string: "http://localhost:4567")!,
+            baseURL: baseURL,
             token: "auth_token_xyz",
-            customHeaders: ["X-App-Name": "SuwayomiTestRunner"],
+            headers: ["X-App-Name": "SuwayomiTestRunner"],
             urlSession: session
         )
 
-        _ = try await client.fetchData(from: URL(string: "http://localhost:4567/api/v1/page/0")!)
+        _ = try await client.fetchData(from: baseURL.appendingPathComponent("api/v1/page/0"))
 
         #expect(capturedHeaders?["Authorization"] == "Bearer auth_token_xyz")
         #expect(capturedHeaders?["X-App-Name"] == "SuwayomiTestRunner")
     }
 
-    @Test("fetchData throws server error on non-2xx HTTP status")
-    func testFetchDataHTTPError() async {
+    @Test("fetchData strips credentials when requesting from external CDN hosts (SEC-01)")
+    func testFetchDataOriginGuarding() async throws {
         let session = makeMockSession()
+        nonisolated(unsafe) var capturedHeaders: [String: String]?
 
         MockURLProtocol.requestHandler = { request in
-            let response = HTTPURLResponse(
-                url: request.url!,
-                statusCode: 404,
-                httpVersion: nil,
-                headerFields: nil
-            )!
-            return (response, Data())
+            capturedHeaders = request.allHTTPHeaderFields
+            return (try mockHTTPResponse(for: request, statusCode: 200), Data())
         }
+        defer { MockURLProtocol.requestHandler = nil }
 
+        let baseURL = try #require(URL(string: "http://localhost:4567"))
+        let externalURL = try #require(URL(string: "https://uploads.mangadex.org/covers/1.jpg"))
         let client = SuwayomiClient(
-            baseURL: URL(string: "http://localhost:4567")!,
+            baseURL: baseURL,
+            token: "secret_token",
+            headers: ["X-Secret": "Sensitive"],
             urlSession: session
         )
 
+        _ = try await client.fetchData(from: externalURL)
+
+        #expect(capturedHeaders?["Authorization"] == nil)
+        #expect(capturedHeaders?["X-Secret"] == nil)
+    }
+
+    @Test("Origin guard strips managed headers on cross-origin redirects")
+    func testCrossOriginRedirectStripsCredentials() throws {
+        let session = makeMockSession()
+        let baseURL = try #require(URL(string: "http://localhost:4567"))
+        let config = SuwayomiClientConfig(
+            baseURL: baseURL,
+            token: "secret",
+            headers: ["X-Secret": "Sensitive"],
+            urlSession: session
+        )
+        let delegate = OriginGuardTaskDelegate(config: config)
+        let externalURL = try #require(URL(string: "https://cdn.example.com/image.jpg"))
+
+        var request = URLRequest(url: externalURL)
+        request.setValue("Bearer secret", forHTTPHeaderField: "Authorization")
+        request.setValue("Sensitive", forHTTPHeaderField: "X-Secret")
+        request.setValue("image/png", forHTTPHeaderField: "Accept")
+
+        let response = try mockHTTPResponse(
+            for: URLRequest(url: baseURL),
+            statusCode: 302
+        )
+        let task = session.dataTask(with: externalURL)
+        let box = RequestBox()
+
+        #expect(!config.isSameOriginAndPrefix(externalURL))
+        #expect(config.managedHeaderNames.contains("authorization"))
+        #expect(config.managedHeaderNames.contains("x-secret"))
+        #expect(request.allHTTPHeaderFields?["Authorization"] == "Bearer secret")
+
+        delegate.urlSession(
+            session,
+            task: task,
+            willPerformHTTPRedirection: response,
+            newRequest: request
+        ) { box.request = $0 }
+
+        #expect(box.request?.value(forHTTPHeaderField: "Authorization") == nil)
+        #expect(box.request?.value(forHTTPHeaderField: "X-Secret") == nil)
+        #expect(box.request?.value(forHTTPHeaderField: "Accept") == "image/png")
+    }
+
+    @Test("Origin guard keeps managed headers on same-origin redirects")
+    func testSameOriginRedirectKeepsCredentials() throws {
+        let session = makeMockSession()
+        let baseURL = try #require(URL(string: "http://localhost:4567/suwayomi"))
+        let config = SuwayomiClientConfig(
+            baseURL: baseURL,
+            token: "secret",
+            headers: ["X-Secret": "Sensitive"],
+            urlSession: session
+        )
+        let delegate = OriginGuardTaskDelegate(config: config)
+        let destinationURL = try #require(URL(string: "http://localhost:4567/suwayomi/api/v1/page/0"))
+
+        var request = URLRequest(url: destinationURL)
+        request.setValue("Bearer secret", forHTTPHeaderField: "Authorization")
+        request.setValue("Sensitive", forHTTPHeaderField: "X-Secret")
+
+        let response = try mockHTTPResponse(
+            for: URLRequest(url: baseURL),
+            statusCode: 302
+        )
+        let task = session.dataTask(with: destinationURL)
+        let box = RequestBox()
+
+        delegate.urlSession(
+            session,
+            task: task,
+            willPerformHTTPRedirection: response,
+            newRequest: request
+        ) { box.request = $0 }
+
+        #expect(box.request?.value(forHTTPHeaderField: "Authorization") == "Bearer secret")
+        #expect(box.request?.value(forHTTPHeaderField: "X-Secret") == "Sensitive")
+    }
+
+    @Test("fetchData maps URLError.cancelled to SuwayomiError.cancelled")
+    func testFetchDataCancellationMapping() async throws {
+        let session = makeMockSession()
+
+        MockURLProtocol.requestHandler = { _ in
+            throw URLError(.cancelled)
+        }
+        defer { MockURLProtocol.requestHandler = nil }
+
+        let baseURL = try #require(URL(string: "http://localhost:4567"))
+        let client = SuwayomiClient(baseURL: baseURL, urlSession: session)
+
         do {
-            _ = try await client.fetchData(from: URL(string: "http://localhost:4567/api/v1/page/999")!)
-            #expect(Bool(false), "Expected error to be thrown")
+            _ = try await client.fetchData(from: baseURL.appendingPathComponent("api/v1/page/0"))
+            Issue.record("Expected cancellation error")
         } catch {
-            switch error {
-            case .server(let message):
-                #expect(message.contains("404"))
-            default:
-                #expect(Bool(false), "Expected SuwayomiError.server, got \(error)")
-            }
+            #expect(error == .cancelled)
+        }
+    }
+
+    @Test("fetchData throws http error on non-2xx HTTP status")
+    func testFetchDataHTTPError() async throws {
+        let session = makeMockSession()
+
+        MockURLProtocol.requestHandler = { request in
+            let response = try mockHTTPResponse(for: request, statusCode: 404)
+            return (response, Data("Not Found".utf8))
+        }
+        defer { MockURLProtocol.requestHandler = nil }
+
+        let baseURL = try #require(URL(string: "http://localhost:4567"))
+        let client = SuwayomiClient(baseURL: baseURL, urlSession: session)
+
+        do {
+            _ = try await client.fetchData(from: baseURL.appendingPathComponent("api/v1/page/999"))
+            Issue.record("Expected error to be thrown")
+        } catch {
+            #expect(error == .http(statusCode: 404, data: Data("Not Found".utf8)))
         }
     }
 
     @Test("fetchData throws network error on URLError")
-    func testFetchDataNetworkError() async {
+    func testFetchDataNetworkError() async throws {
         let session = makeMockSession()
 
         MockURLProtocol.requestHandler = { _ in
             throw URLError(.notConnectedToInternet)
         }
+        defer { MockURLProtocol.requestHandler = nil }
 
-        let client = SuwayomiClient(
-            baseURL: URL(string: "http://localhost:4567")!,
-            urlSession: session
-        )
+        let baseURL = try #require(URL(string: "http://localhost:4567"))
+        let client = SuwayomiClient(baseURL: baseURL, urlSession: session)
 
         do {
-            _ = try await client.fetchData(from: URL(string: "http://localhost:4567/api/v1/page/0")!)
-            #expect(Bool(false), "Expected error to be thrown")
+            _ = try await client.fetchData(from: baseURL.appendingPathComponent("api/v1/page/0"))
+            Issue.record("Expected error to be thrown")
         } catch {
-            switch error {
-            case .network(let urlError):
-                #expect(urlError.code == .notConnectedToInternet)
-            default:
-                #expect(Bool(false), "Expected SuwayomiError.network, got \(error)")
+            guard case .network(let urlError) = error else {
+                Issue.record("Expected SuwayomiError.network, got \(error)")
+                return
             }
+            #expect(urlError.code == .notConnectedToInternet)
         }
     }
 
@@ -163,14 +301,12 @@ struct NetworkTests {
         let mockData = Data("mock-image-bytes".utf8)
 
         MockURLProtocol.requestHandler = { request in
-            let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!
-            return (response, mockData)
+            (try mockHTTPResponse(for: request, statusCode: 200), mockData)
         }
+        defer { MockURLProtocol.requestHandler = nil }
 
-        let client = SuwayomiClient(
-            baseURL: URL(string: "http://localhost:4567")!,
-            urlSession: session
-        )
+        let baseURL = try #require(URL(string: "http://localhost:4567"))
+        let client = SuwayomiClient(baseURL: baseURL, urlSession: session)
 
         let manga = MangaSummary(
             id: 1,
@@ -184,7 +320,7 @@ struct NetworkTests {
         let thumbData = try await client.fetchThumbnail(for: manga)
         #expect(thumbData == mockData)
 
-        let directThumbData = try await client.fetchThumbnail(from: "/api/v1/manga/1/thumbnail")
+        let directThumbData = try await client.fetchMedia(from: "/api/v1/manga/1/thumbnail")
         #expect(directThumbData == mockData)
 
         let fullManga = makeManga(id: 3, thumbnailPath: "/api/v1/manga/3/thumbnail")
@@ -254,7 +390,7 @@ struct NetworkTests {
         let extensionIconData = try await client.fetchIcon(for: extensionFixture)
         #expect(extensionIconData == mockData)
 
-        let pageData = try await client.fetchPageImageData(pagePathOrURL: "/api/v1/page/0")
+        let pageData = try await client.fetchPage(at: "/api/v1/page/0")
         #expect(pageData == mockData)
     }
 }

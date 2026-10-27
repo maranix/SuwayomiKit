@@ -23,6 +23,20 @@ public enum ContentWarning: String, Sendable, Hashable, CaseIterable {
     }
 }
 
+public enum SourceMangaType: String, Sendable, Hashable, CaseIterable {
+    case popular
+    case latest
+    case search
+
+    func toAPI() -> API.FetchSourceMangaType {
+        switch self {
+        case .popular: return .popular
+        case .latest: return .latest
+        case .search: return .search
+        }
+    }
+}
+
 public struct SourceSummary: Identifiable, Hashable, Sendable {
     public let id: String
     public let name: String

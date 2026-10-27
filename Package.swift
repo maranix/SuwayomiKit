@@ -32,7 +32,10 @@ let package = Package(
         .testTarget(
             name: "SuwayomiKitTests",
             dependencies: [
-                .target(name: "SuwayomiKit")
+                .target(name: "API"),
+                .target(name: "SuwayomiKit"),
+                .product(name: "Apollo", package: "apollo-ios"),
+                .product(name: "ApolloAPI", package: "apollo-ios"),
             ]
         ),
     ],

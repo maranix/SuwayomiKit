@@ -3,22 +3,23 @@ import Foundation
 
 extension SuwayomiClient {
     public func library(
-        categoryId: Int? = nil,
-        sourceId: String? = nil,
+        categoryIDs: [Int]? = nil,
+        sourceID: String? = nil,
         first: Int? = nil,
         offset: Int? = nil,
         inLibrary: Bool = true
     ) async throws(SuwayomiError) -> PagedResult<MangaSummary> {
+        let catIDs = try graphQLIDs(categoryIDs)
         let condition = MangaConditionInput(
-            categoryIds: categoryId.map { .some([Int32($0)]) } ?? .none,
+            categoryIds: catIDs.map { .some($0) } ?? .none,
             inLibrary: .some(inLibrary),
-            sourceId: sourceId.map { .some($0) } ?? .none
+            sourceId: sourceID.map { .some($0) } ?? .none
         )
         let data = try await query(
             GetLibraryMangasQuery(
                 condition: .some(condition),
-                first: first.map { .some(Int32($0)) } ?? .none,
-                offset: offset.map { .some(Int32($0)) } ?? .none
+                first: try graphQLID(first),
+                offset: try graphQLID(offset)
             )
         )
         let mangas = data.mangas.nodes.map { MangaSummary($0.fragments.mangaSummaryFields) }
@@ -32,7 +33,7 @@ extension SuwayomiClient {
     }
 
     public func category(id: Int) async throws(SuwayomiError) -> Category {
-        let data = try await query(GetCategoryQuery(id: Int32(id)))
+        let data = try await query(GetCategoryQuery(id: try graphQLID(id)))
         return Category(data.category.fragments.categoryFields)
     }
 
@@ -48,7 +49,7 @@ extension SuwayomiClient {
             includeInDownload: includeInDownload.map { .some(GraphQLEnum($0.toAPI())) } ?? .none,
             includeInUpdate: includeInUpdate.map { .some(GraphQLEnum($0.toAPI())) } ?? .none,
             name: name,
-            order: order.map { .some(Int32($0)) } ?? .none
+            order: try graphQLID(order)
         )
         let data = try await mutation(
             CreateCategoryMutation(input: input)
@@ -73,7 +74,7 @@ extension SuwayomiClient {
             name: name.map { .some($0) } ?? .none
         )
         let data = try await mutation(
-            UpdateCategoryMutation(input: .init(id: Int32(id), patch: patch))
+            UpdateCategoryMutation(input: .init(id: try graphQLID(id), patch: patch))
         )
         guard let payload = data.updateCategory else {
             throw SuwayomiError.missingData
@@ -82,12 +83,12 @@ extension SuwayomiClient {
     }
 
     public func deleteCategory(id: Int) async throws(SuwayomiError) {
-        _ = try await mutation(DeleteCategoryMutation(input: .init(categoryId: Int32(id))))
+        _ = try await mutation(DeleteCategoryMutation(input: .init(categoryId: try graphQLID(id))))
     }
 
     public func updateCategoryOrder(id: Int, position: Int) async throws(SuwayomiError) -> [Category] {
         let data = try await mutation(
-            UpdateCategoryOrderMutation(input: .init(id: Int32(id), position: Int32(position)))
+            UpdateCategoryOrderMutation(input: .init(id: try graphQLID(id), position: try graphQLID(position)))
         )
         guard let payload = data.updateCategoryOrder else {
             throw SuwayomiError.missingData
@@ -96,9 +97,10 @@ extension SuwayomiClient {
     }
 
     public func updateLibrary(categories: [Int]? = nil) async throws(SuwayomiError) -> LibraryJobsInfo {
+        let catIDs = try graphQLIDs(categories)
         let data = try await mutation(
             UpdateLibraryMutation(
-                input: .init(categories: categories.map { .some($0.map { Int32($0) }) } ?? .none)
+                input: .init(categories: catIDs.map { .some($0) } ?? .none)
             )
         )
         guard let payload = data.updateLibrary else {

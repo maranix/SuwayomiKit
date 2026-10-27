@@ -1,20 +1,6 @@
 import API
 import Foundation
 
-public enum SourceMangaType: String, Sendable, Equatable, Codable {
-    case popular
-    case latest
-    case search
-
-    func toAPI() -> API.FetchSourceMangaType {
-        switch self {
-        case .popular: return .popular
-        case .latest: return .latest
-        case .search: return .search
-        }
-    }
-}
-
 extension SuwayomiClient {
     public func sources(
         lang: String? = nil,
@@ -31,8 +17,8 @@ extension SuwayomiClient {
         let data = try await query(
             GetSourcesQuery(
                 condition: condition,
-                first: first.map { .some(Int32($0)) } ?? .none,
-                offset: offset.map { .some(Int32($0)) } ?? .none
+                first: try graphQLID(first),
+                offset: try graphQLID(offset)
             )
         )
         let sources = data.sources.nodes.map { SourceSummary($0.fragments.sourceSummaryFields) }
@@ -67,9 +53,9 @@ extension SuwayomiClient {
         type: SourceMangaType = .popular,
         page: Int = 1,
         query searchQuery: String? = nil
-    ) async throws(SuwayomiError) -> (mangas: [MangaSummary], hasNextPage: Bool) {
+    ) async throws(SuwayomiError) -> SourceMangaPage {
         let input = FetchSourceMangaInput(
-            page: Int32(page),
+            page: try graphQLID(page),
             query: searchQuery.map { .some($0) } ?? .none,
             source: sourceId,
             type: GraphQLEnum(type.toAPI())
@@ -81,6 +67,6 @@ extension SuwayomiClient {
             throw SuwayomiError.missingData
         }
         let mangas = payload.mangas.map { MangaSummary($0.fragments.mangaSummaryFields) }
-        return (mangas: mangas, hasNextPage: payload.hasNextPage)
+        return SourceMangaPage(mangas: mangas, hasNextPage: payload.hasNextPage)
     }
 }

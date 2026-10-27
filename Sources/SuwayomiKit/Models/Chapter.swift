@@ -1,6 +1,50 @@
 import API
 import Foundation
 
+public enum ChapterOrderBy: String, Sendable, Hashable, CaseIterable {
+    case id
+    case sourceOrder
+    case name
+    case uploadDate
+    case chapterNumber
+    case lastReadAt
+    case fetchedAt
+
+    func toAPI() -> API.ChapterOrderBy {
+        switch self {
+        case .id: return .id
+        case .sourceOrder: return .sourceOrder
+        case .name: return .name
+        case .uploadDate: return .uploadDate
+        case .chapterNumber: return .chapterNumber
+        case .lastReadAt: return .lastReadAt
+        case .fetchedAt: return .fetchedAt
+        }
+    }
+}
+
+public enum SortDirection: String, Sendable, Hashable, CaseIterable {
+    case ascending
+    case descending
+
+    func toAPI() -> API.SortOrder {
+        switch self {
+        case .ascending: return .asc
+        case .descending: return .desc
+        }
+    }
+}
+
+public struct ChapterOrder: Sendable, Hashable {
+    public let by: ChapterOrderBy
+    public let direction: SortDirection
+
+    public init(by: ChapterOrderBy, direction: SortDirection = .ascending) {
+        self.by = by
+        self.direction = direction
+    }
+}
+
 public struct Chapter: Identifiable, Hashable, Sendable {
     public let id: Int
     public let mangaID: Int
