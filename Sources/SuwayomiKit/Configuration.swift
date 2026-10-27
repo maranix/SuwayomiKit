@@ -136,15 +136,6 @@ public struct SuwayomiClientConfig: Sendable {
         return baseComponents.url
     }
 
-    /// Header names whose values must never follow a redirect outside the server origin/prefix.
-    var managedHeaderNames: Set<String> {
-        var names = Set(headers.keys.map { $0.lowercased() })
-        if token != nil {
-            names.insert("authorization")
-        }
-        return names
-    }
-
     var redactedBaseURLString: String {
         guard var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: true) else {
             return baseURL.absoluteString

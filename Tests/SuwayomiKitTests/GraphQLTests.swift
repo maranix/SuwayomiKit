@@ -2,6 +2,7 @@ import API
 import Apollo
 import Foundation
 import Testing
+
 @testable import SuwayomiKit
 
 final class MockNetworkTransport: NetworkTransport, @unchecked Sendable {

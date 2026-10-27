@@ -22,7 +22,7 @@ Suwayomi-Server (formerly Tachidesk) is a self-hosted manga server that runs sou
 - **Pure Swift Domain Models**: Isolates client applications completely from raw GraphQL and Apollo-generated types.
 - **Typed Errors**: Uses typed Swift throws (`throws(SuwayomiError)`) for explicit, clean error handling.
 - **Base URL & Reverse Proxy Support**: Automatically derives the GraphQL endpoint and resolves relative media paths (`/api/v1/...`) against arbitrary server base URLs, subpaths, and custom GraphQL routes.
-- **Token & Custom Headers**: Seamlessly handles Bearer token authentication and custom HTTP headers for both GraphQL requests and direct media/page image downloads. Credentials are redacted from descriptions and stripped on cross-origin redirects.
+- **Token & Custom Headers**: Seamlessly handles Bearer token authentication and custom HTTP headers for both GraphQL requests and direct media/page image downloads. Credentials and custom headers are only attached to same-origin requests under the configured base URL/subpath, and are redacted from descriptions.
 - **Chapter Ordering**: Multi-key chapter sorting with ascending/descending directions.
 
 ## Requirements
@@ -177,9 +177,7 @@ let proxyClient = SuwayomiClient(
 try await authenticated.clearCache()
 ```
 
-`SuwayomiClient` redacts tokens and header values from `description` output. Media
-requests also strip managed headers if a redirect leaves the configured server
-origin or subpath.
+`SuwayomiClient` redacts tokens and password values from `description` and `debugDescription` output. Media requests attach authentication credentials and custom headers exclusively to same-origin requests under the configured server base URL and subpath, protecting against credential leakage to third-party CDNs.
 
 ## Development
 

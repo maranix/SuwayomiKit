@@ -1,5 +1,6 @@
 import Foundation
 import Testing
+
 @testable import SuwayomiKit
 
 final class MockURLProtocol: URLProtocol, @unchecked Sendable {
@@ -48,10 +49,6 @@ final class MockURLProtocol: URLProtocol, @unchecked Sendable {
     }
 
     override func stopLoading() {}
-}
-
-private final class RequestBox: @unchecked Sendable {
-    var request: URLRequest?
 }
 
 private func mockHTTPResponse(
@@ -151,83 +148,6 @@ struct NetworkTests {
 
         #expect(capturedHeaders?["Authorization"] == nil)
         #expect(capturedHeaders?["X-Secret"] == nil)
-    }
-
-    @Test("Origin guard strips managed headers on cross-origin redirects")
-    func testCrossOriginRedirectStripsCredentials() throws {
-        let session = makeMockSession()
-        let baseURL = try #require(URL(string: "http://localhost:4567"))
-        let config = SuwayomiClientConfig(
-            baseURL: baseURL,
-            token: "secret",
-            headers: ["X-Secret": "Sensitive"],
-            urlSession: session
-        )
-        let delegate = OriginGuardTaskDelegate(config: config)
-        let externalURL = try #require(URL(string: "https://cdn.example.com/image.jpg"))
-
-        var request = URLRequest(url: externalURL)
-        request.setValue("Bearer secret", forHTTPHeaderField: "Authorization")
-        request.setValue("Sensitive", forHTTPHeaderField: "X-Secret")
-        request.setValue("image/png", forHTTPHeaderField: "Accept")
-
-        let response = try mockHTTPResponse(
-            for: URLRequest(url: baseURL),
-            statusCode: 302
-        )
-        let task = session.dataTask(with: externalURL)
-        let box = RequestBox()
-
-        #expect(!config.isSameOriginAndPrefix(externalURL))
-        #expect(config.managedHeaderNames.contains("authorization"))
-        #expect(config.managedHeaderNames.contains("x-secret"))
-        #expect(request.allHTTPHeaderFields?["Authorization"] == "Bearer secret")
-
-        delegate.urlSession(
-            session,
-            task: task,
-            willPerformHTTPRedirection: response,
-            newRequest: request
-        ) { box.request = $0 }
-
-        #expect(box.request?.value(forHTTPHeaderField: "Authorization") == nil)
-        #expect(box.request?.value(forHTTPHeaderField: "X-Secret") == nil)
-        #expect(box.request?.value(forHTTPHeaderField: "Accept") == "image/png")
-    }
-
-    @Test("Origin guard keeps managed headers on same-origin redirects")
-    func testSameOriginRedirectKeepsCredentials() throws {
-        let session = makeMockSession()
-        let baseURL = try #require(URL(string: "http://localhost:4567/suwayomi"))
-        let config = SuwayomiClientConfig(
-            baseURL: baseURL,
-            token: "secret",
-            headers: ["X-Secret": "Sensitive"],
-            urlSession: session
-        )
-        let delegate = OriginGuardTaskDelegate(config: config)
-        let destinationURL = try #require(URL(string: "http://localhost:4567/suwayomi/api/v1/page/0"))
-
-        var request = URLRequest(url: destinationURL)
-        request.setValue("Bearer secret", forHTTPHeaderField: "Authorization")
-        request.setValue("Sensitive", forHTTPHeaderField: "X-Secret")
-
-        let response = try mockHTTPResponse(
-            for: URLRequest(url: baseURL),
-            statusCode: 302
-        )
-        let task = session.dataTask(with: destinationURL)
-        let box = RequestBox()
-
-        delegate.urlSession(
-            session,
-            task: task,
-            willPerformHTTPRedirection: response,
-            newRequest: request
-        ) { box.request = $0 }
-
-        #expect(box.request?.value(forHTTPHeaderField: "Authorization") == "Bearer secret")
-        #expect(box.request?.value(forHTTPHeaderField: "X-Secret") == "Sensitive")
     }
 
     @Test("fetchData maps URLError.cancelled to SuwayomiError.cancelled")

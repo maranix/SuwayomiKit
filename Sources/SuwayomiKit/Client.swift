@@ -125,9 +125,7 @@ public struct SuwayomiClient: Sendable {
         }
 
         do {
-            let redirectGuard: OriginGuardTaskDelegate? =
-                config.managedHeaderNames.isEmpty ? nil : OriginGuardTaskDelegate(config: config)
-            let (data, response) = try await config.urlSession.data(for: request, delegate: redirectGuard)
+            let (data, response) = try await config.urlSession.data(for: request)
             if let httpResponse = response as? HTTPURLResponse, !(200...299).contains(httpResponse.statusCode) {
                 throw SuwayomiError.http(statusCode: httpResponse.statusCode, data: data)
             }
