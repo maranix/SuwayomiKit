@@ -13,6 +13,14 @@ public enum ContentWarning: String, Sendable, Hashable, CaseIterable {
         case .safe, .none: self = .safe
         }
     }
+
+    func toAPI() -> API.ContentWarning {
+        switch self {
+        case .mixed: return .mixed
+        case .nsfw: return .nsfw
+        case .safe: return .safe
+        }
+    }
 }
 
 public struct SourceSummary: Identifiable, Hashable, Sendable {
@@ -20,7 +28,7 @@ public struct SourceSummary: Identifiable, Hashable, Sendable {
     public let name: String
     public let displayName: String
     public let lang: String
-    public let iconURL: String
+    public let iconPath: String
     public let supportsLatest: Bool
 
     public init(
@@ -28,14 +36,14 @@ public struct SourceSummary: Identifiable, Hashable, Sendable {
         name: String,
         displayName: String,
         lang: String,
-        iconURL: String,
+        iconPath: String,
         supportsLatest: Bool
     ) {
         self.id = id
         self.name = name
         self.displayName = displayName
         self.lang = lang
-        self.iconURL = iconURL
+        self.iconPath = iconPath
         self.supportsLatest = supportsLatest
     }
 
@@ -44,7 +52,7 @@ public struct SourceSummary: Identifiable, Hashable, Sendable {
         self.name = fragment.name
         self.displayName = fragment.displayName
         self.lang = fragment.lang
-        self.iconURL = fragment.iconUrl
+        self.iconPath = fragment.iconUrl
         self.supportsLatest = fragment.supportsLatest
     }
 }
@@ -54,7 +62,7 @@ public struct Source: Identifiable, Hashable, Sendable {
     public let name: String
     public let displayName: String
     public let lang: String
-    public let iconURL: String
+    public let iconPath: String
     public let homeURL: URL?
     public let supportsLatest: Bool
     public let isConfigurable: Bool
@@ -65,7 +73,7 @@ public struct Source: Identifiable, Hashable, Sendable {
         name: String,
         displayName: String,
         lang: String,
-        iconURL: String,
+        iconPath: String,
         homeURL: URL?,
         supportsLatest: Bool,
         isConfigurable: Bool,
@@ -75,7 +83,7 @@ public struct Source: Identifiable, Hashable, Sendable {
         self.name = name
         self.displayName = displayName
         self.lang = lang
-        self.iconURL = iconURL
+        self.iconPath = iconPath
         self.homeURL = homeURL
         self.supportsLatest = supportsLatest
         self.isConfigurable = isConfigurable
@@ -87,10 +95,13 @@ public struct Source: Identifiable, Hashable, Sendable {
         self.name = fragment.name
         self.displayName = fragment.displayName
         self.lang = fragment.lang
-        self.iconURL = fragment.iconUrl
+        self.iconPath = fragment.iconUrl
         self.homeURL = fragment.homeUrl.flatMap(URL.init(string:))
         self.supportsLatest = fragment.supportsLatest
         self.isConfigurable = fragment.isConfigurable
         self.contentWarning = ContentWarning(fragment.contentWarning)
     }
 }
+
+extension Source: SourcePreview {}
+extension SourceSummary: SourcePreview {}

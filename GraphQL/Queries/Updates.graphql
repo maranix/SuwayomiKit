@@ -1,11 +1,7 @@
 query GetLibraryUpdateStatus {
   libraryUpdateStatus {
     jobsInfo {
-      isRunning
-      totalJobs
-      finishedJobs
-      skippedCategoriesCount
-      skippedMangasCount
+      ...LibraryJobsInfoFields
     }
   }
 }

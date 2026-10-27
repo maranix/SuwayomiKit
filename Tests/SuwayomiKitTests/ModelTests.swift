@@ -9,7 +9,7 @@ struct ModelTests {
         let summary1 = MangaSummary(
             id: 101,
             title: "One Piece",
-            thumbnailURL: "/api/v1/manga/101/thumbnail",
+            thumbnailPath: "/api/v1/manga/101/thumbnail",
             inLibrary: true,
             unreadCount: 45,
             downloadCount: 10,
@@ -18,7 +18,7 @@ struct ModelTests {
         let summary2 = MangaSummary(
             id: 101,
             title: "One Piece",
-            thumbnailURL: "/api/v1/manga/101/thumbnail",
+            thumbnailPath: "/api/v1/manga/101/thumbnail",
             inLibrary: true,
             unreadCount: 45,
             downloadCount: 10,
@@ -27,7 +27,7 @@ struct ModelTests {
 
         #expect(summary1.id == 101)
         #expect(summary1.title == "One Piece")
-        #expect(summary1.thumbnailURL == "/api/v1/manga/101/thumbnail")
+        #expect(summary1.thumbnailPath == "/api/v1/manga/101/thumbnail")
         #expect(summary1.inLibrary == true)
         #expect(summary1.unreadCount == 45)
         #expect(summary1.downloadCount == 10)
@@ -62,8 +62,8 @@ struct ModelTests {
             status: .ongoing,
             inLibrary: true,
             inLibraryAt: inLibraryDate,
-            thumbnailURL: "/api/v1/manga/101/thumbnail",
-            thumbnailUrlLastFetched: lastFetchedDate,
+            thumbnailPath: "/api/v1/manga/101/thumbnail",
+            thumbnailLastFetchedAt: lastFetchedDate,
             sourceID: "1234567890",
             url: "/manga/one-piece",
             realURL: realURL,
@@ -86,9 +86,15 @@ struct ModelTests {
         #expect(manga.inLibrary == true)
         #expect(manga.inLibraryAt == inLibraryDate)
         #expect(manga.realURL == realURL)
-        #expect(manga.categories.count == 1)
-        #expect(manga.categories.first?.id == 1)
+        #expect(manga.categories?.count == 1)
+        #expect(manga.categories?.first?.id == 1)
         #expect(manga.isInitialized == true)
+    }
+
+    @Test("Manga categories distinguish not requested from empty")
+    func testMangaCategoriesOptionality() {
+        #expect(makeManga(categories: nil).categories == nil)
+        #expect(makeManga(categories: []).categories == [])
     }
 
     @Test("Chapter initializes with Double chapterNumber, dates, and URL")
@@ -158,7 +164,7 @@ struct ModelTests {
             name: "MangaDex",
             displayName: "MangaDex (EN)",
             lang: "en",
-            iconURL: "/api/v1/source/mangadex-en/icon",
+            iconPath: "/api/v1/source/mangadex-en/icon",
             supportsLatest: true
         )
         #expect(summary.id == "mangadex-en")
@@ -169,7 +175,7 @@ struct ModelTests {
             name: "MangaDex",
             displayName: "MangaDex (EN)",
             lang: "en",
-            iconURL: "/api/v1/source/mangadex-en/icon",
+            iconPath: "/api/v1/source/mangadex-en/icon",
             homeURL: URL(string: "https://mangadex.org"),
             supportsLatest: true,
             isConfigurable: true,
@@ -192,7 +198,7 @@ struct ModelTests {
             isInstalled: true,
             hasUpdate: false,
             isObsolete: false,
-            iconURL: "/api/v1/extension/mangadex/icon",
+            iconPath: "/api/v1/extension/mangadex/icon",
             contentWarning: .safe
         )
 
@@ -226,7 +232,7 @@ struct ModelTests {
         let manga = MangaSummary(
             id: 101,
             title: "Test Manga",
-            thumbnailURL: nil,
+            thumbnailPath: nil,
             inLibrary: true,
             unreadCount: 1,
             downloadCount: 0,
@@ -296,10 +302,11 @@ struct ModelTests {
 
     @Test("ServerInfo, ServerSettings and AuthTokens initialize properly")
     func testServerAndAuth() {
+        let buildTime = Date(timeIntervalSince1970: 1_729_700_000)
         let server = ServerInfo(
             name: "Suwayomi-Server",
             version: "1.1.0",
-            buildTime: "1729700000000",
+            buildTime: buildTime,
             buildType: "Release",
             githubURL: URL(string: "https://github.com/Suwayomi/Suwayomi-Server"),
             discordURL: URL(string: "https://discord.gg/suwayomi"),
@@ -311,6 +318,7 @@ struct ModelTests {
             )
         )
         #expect(server.name == "Suwayomi-Server")
+        #expect(server.buildTime == buildTime)
         #expect(server.platform.headless == true)
         #expect(server.platform.os.name == "Linux")
 

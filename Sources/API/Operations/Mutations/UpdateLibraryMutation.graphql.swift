@@ -8,7 +8,8 @@ nonisolated public struct UpdateLibraryMutation: GraphQLMutation {
   public static let operationName: String = "UpdateLibrary"
   public static let operationDocument: ApolloAPI.OperationDocument = .init(
     definition: .init(
-      #"mutation UpdateLibrary($input: UpdateLibraryInput!) { updateLibrary(input: $input) { __typename updateStatus { __typename jobsInfo { __typename isRunning totalJobs finishedJobs skippedCategoriesCount skippedMangasCount } } } }"#
+      #"mutation UpdateLibrary($input: UpdateLibraryInput!) { updateLibrary(input: $input) { __typename updateStatus { __typename jobsInfo { __typename ...LibraryJobsInfoFields } } } }"#,
+      fragments: [LibraryJobsInfoFields.self]
     ))
 
   public var input: UpdateLibraryInput
@@ -79,14 +80,11 @@ nonisolated public struct UpdateLibraryMutation: GraphQLMutation {
           @_spi(Execution) public static var __parentType: any ApolloAPI.ParentType { API.Objects.UpdaterJobsInfoType }
           @_spi(Execution) public static var __selections: [ApolloAPI.Selection] { [
             .field("__typename", String.self),
-            .field("isRunning", Bool.self),
-            .field("totalJobs", Int.self),
-            .field("finishedJobs", Int.self),
-            .field("skippedCategoriesCount", Int.self),
-            .field("skippedMangasCount", Int.self),
+            .fragment(LibraryJobsInfoFields.self),
           ] }
           @_spi(Execution) public static var __fulfilledFragments: [any ApolloAPI.SelectionSet.Type] { [
-            UpdateLibraryMutation.Data.UpdateLibrary.UpdateStatus.JobsInfo.self
+            UpdateLibraryMutation.Data.UpdateLibrary.UpdateStatus.JobsInfo.self,
+            LibraryJobsInfoFields.self
           ] }
 
           public var isRunning: Bool { __data["isRunning"] }
@@ -94,6 +92,13 @@ nonisolated public struct UpdateLibraryMutation: GraphQLMutation {
           public var finishedJobs: Int { __data["finishedJobs"] }
           public var skippedCategoriesCount: Int { __data["skippedCategoriesCount"] }
           public var skippedMangasCount: Int { __data["skippedMangasCount"] }
+
+          public struct Fragments: FragmentContainer {
+            @_spi(Unsafe) public let __data: DataDict
+            @_spi(Unsafe) public init(_dataDict: DataDict) { __data = _dataDict }
+
+            public var libraryJobsInfoFields: LibraryJobsInfoFields { _toFragment() }
+          }
         }
       }
     }

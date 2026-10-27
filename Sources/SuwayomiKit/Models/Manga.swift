@@ -38,7 +38,7 @@ public enum UpdateStrategy: String, Sendable, Hashable, CaseIterable {
 public struct MangaSummary: Identifiable, Hashable, Sendable {
     public let id: Int
     public let title: String
-    public let thumbnailURL: String?
+    public let thumbnailPath: String?
     public let inLibrary: Bool
     public let unreadCount: Int
     public let downloadCount: Int
@@ -47,7 +47,7 @@ public struct MangaSummary: Identifiable, Hashable, Sendable {
     public init(
         id: Int,
         title: String,
-        thumbnailURL: String?,
+        thumbnailPath: String?,
         inLibrary: Bool,
         unreadCount: Int,
         downloadCount: Int,
@@ -55,7 +55,7 @@ public struct MangaSummary: Identifiable, Hashable, Sendable {
     ) {
         self.id = id
         self.title = title
-        self.thumbnailURL = thumbnailURL
+        self.thumbnailPath = thumbnailPath
         self.inLibrary = inLibrary
         self.unreadCount = unreadCount
         self.downloadCount = downloadCount
@@ -65,7 +65,7 @@ public struct MangaSummary: Identifiable, Hashable, Sendable {
     init(_ fragment: API.MangaSummaryFields) {
         self.id = fragment.id
         self.title = fragment.title
-        self.thumbnailURL = fragment.thumbnailUrl
+        self.thumbnailPath = fragment.thumbnailUrl
         self.inLibrary = fragment.inLibrary
         self.unreadCount = fragment.unreadCount
         self.downloadCount = fragment.downloadCount
@@ -83,8 +83,8 @@ public struct Manga: Identifiable, Hashable, Sendable {
     public let status: MangaStatus
     public let inLibrary: Bool
     public let inLibraryAt: Date?
-    public let thumbnailURL: String?
-    public let thumbnailUrlLastFetched: Date?
+    public let thumbnailPath: String?
+    public let thumbnailLastFetchedAt: Date?
     public let sourceID: String
     public let url: String
     public let realURL: URL?
@@ -95,7 +95,7 @@ public struct Manga: Identifiable, Hashable, Sendable {
     public let isInitialized: Bool
     public let lastFetchedAt: Date?
     public let chaptersLastFetchedAt: Date?
-    public let categories: [Category]
+    public let categories: [Category]?
 
     public init(
         id: Int,
@@ -107,8 +107,8 @@ public struct Manga: Identifiable, Hashable, Sendable {
         status: MangaStatus,
         inLibrary: Bool,
         inLibraryAt: Date?,
-        thumbnailURL: String?,
-        thumbnailUrlLastFetched: Date?,
+        thumbnailPath: String?,
+        thumbnailLastFetchedAt: Date?,
         sourceID: String,
         url: String,
         realURL: URL?,
@@ -119,7 +119,7 @@ public struct Manga: Identifiable, Hashable, Sendable {
         isInitialized: Bool,
         lastFetchedAt: Date?,
         chaptersLastFetchedAt: Date?,
-        categories: [Category] = []
+        categories: [Category]? = nil
     ) {
         self.id = id
         self.title = title
@@ -130,8 +130,8 @@ public struct Manga: Identifiable, Hashable, Sendable {
         self.status = status
         self.inLibrary = inLibrary
         self.inLibraryAt = inLibraryAt
-        self.thumbnailURL = thumbnailURL
-        self.thumbnailUrlLastFetched = thumbnailUrlLastFetched
+        self.thumbnailPath = thumbnailPath
+        self.thumbnailLastFetchedAt = thumbnailLastFetchedAt
         self.sourceID = sourceID
         self.url = url
         self.realURL = realURL
@@ -145,7 +145,7 @@ public struct Manga: Identifiable, Hashable, Sendable {
         self.categories = categories
     }
 
-    init(_ fragment: API.MangaFields, categories: [Category] = []) {
+    init(_ fragment: API.MangaFields, categories: [Category]? = nil) {
         self.id = fragment.id
         self.title = fragment.title
         self.artist = fragment.artist
@@ -155,8 +155,8 @@ public struct Manga: Identifiable, Hashable, Sendable {
         self.status = MangaStatus(fragment.status)
         self.inLibrary = fragment.inLibrary
         self.inLibraryAt = Date(epochMilliseconds: fragment.inLibraryAt)
-        self.thumbnailURL = fragment.thumbnailUrl
-        self.thumbnailUrlLastFetched = Date(epochMilliseconds: fragment.thumbnailUrlLastFetched)
+        self.thumbnailPath = fragment.thumbnailUrl
+        self.thumbnailLastFetchedAt = Date(epochMilliseconds: fragment.thumbnailUrlLastFetched)
         self.sourceID = fragment.sourceId
         self.url = fragment.url
         self.realURL = fragment.realUrl.flatMap(URL.init(string:))
@@ -170,3 +170,6 @@ public struct Manga: Identifiable, Hashable, Sendable {
         self.categories = categories
     }
 }
+
+extension Manga: MangaPreview {}
+extension MangaSummary: MangaPreview {}

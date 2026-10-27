@@ -139,7 +139,7 @@ struct ClientTests {
         let mangaWithThumb = MangaSummary(
             id: 1,
             title: "Title",
-            thumbnailURL: "/api/v1/manga/1/thumbnail",
+            thumbnailPath: "/api/v1/manga/1/thumbnail",
             inLibrary: false,
             unreadCount: 0,
             downloadCount: 0,
@@ -148,7 +148,7 @@ struct ClientTests {
         let mangaNoThumb = MangaSummary(
             id: 2,
             title: "Title 2",
-            thumbnailURL: nil,
+            thumbnailPath: nil,
             inLibrary: false,
             unreadCount: 0,
             downloadCount: 0,
@@ -157,7 +157,7 @@ struct ClientTests {
         let mangaEmptyThumb = MangaSummary(
             id: 3,
             title: "Title 3",
-            thumbnailURL: "",
+            thumbnailPath: "",
             inLibrary: false,
             unreadCount: 0,
             downloadCount: 0,
@@ -169,6 +169,12 @@ struct ClientTests {
                 == "http://localhost:4567/api/v1/manga/1/thumbnail")
         #expect(client.thumbnailURL(for: mangaNoThumb) == nil)
         #expect(client.thumbnailURL(for: mangaEmptyThumb) == nil)
+
+        let fullManga = makeManga(id: 4, thumbnailPath: "/api/v1/manga/4/thumbnail")
+        #expect(
+            client.thumbnailURL(for: fullManga)?.absoluteString
+                == "http://localhost:4567/api/v1/manga/4/thumbnail")
+        #expect(client.thumbnailURL(for: makeManga(id: 5, thumbnailPath: nil)) == nil)
 
         #expect(
             client.pageURL(for: "/api/v1/page/0").absoluteString

@@ -1,4 +1,4 @@
-import Foundation
+import API
 
 public struct LibraryJobsInfo: Hashable, Sendable {
     public let isRunning: Bool
@@ -19,5 +19,13 @@ public struct LibraryJobsInfo: Hashable, Sendable {
         self.finishedJobs = finishedJobs
         self.skippedCategoriesCount = skippedCategoriesCount
         self.skippedMangasCount = skippedMangasCount
+    }
+
+    init(_ fragment: API.LibraryJobsInfoFields) {
+        self.isRunning = fragment.isRunning
+        self.totalJobs = fragment.totalJobs
+        self.finishedJobs = fragment.finishedJobs
+        self.skippedCategoriesCount = fragment.skippedCategoriesCount
+        self.skippedMangasCount = fragment.skippedMangasCount
     }
 }

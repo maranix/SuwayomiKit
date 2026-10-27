@@ -18,7 +18,7 @@ Suwayomi-Server (formerly Tachidesk) is a self-hosted manga server that runs sou
 
 ## Features
 
-- **Swift 6 Strict Concurrency**: All domain models conform to `Sendable, Equatable, Identifiable, Codable`.
+- **Swift 6 Strict Concurrency**: Domain models are `Sendable` value types; entity models conform to `Identifiable` and `Hashable`.
 - **Pure Swift Domain Models**: Isolates client applications completely from raw GraphQL and Apollo-generated types.
 - **Typed Errors**: Uses typed Swift throws (`throws(SuwayomiError)`) for explicit, clean error handling.
 - **Base URL & Reverse Proxy Support**: Automatically derives GraphQL endpoint and resolves relative media paths (`/api/v1/...`) against arbitrary server base URLs and subpaths.
@@ -71,7 +71,7 @@ let client = SuwayomiClient(
 ```swift
 // Fetch library mangas (optionally filtered by category or source)
 let libraryResult = try await client.library(categoryId: 1, first: 20, offset: 0)
-for manga in libraryResult.items {
+for manga in libraryResult {
     print("Manga: \(manga.title) (ID: \(manga.id))")
 }
 
@@ -81,12 +81,23 @@ for category in categories {
     print("Category: \(category.name) (ID: \(category.id))")
 }
 
-// Browse sources by language
-let sourcesResult = try await client.sources(lang: "en")
-for source in sourcesResult.items {
+// Browse sources by language and filter by content warning server-side
+let sourcesResult = try await client.sources(lang: "en", contentWarning: .safe)
+for source in sourcesResult {
     print("Source: \(source.displayName) (ID: \(source.id))")
 }
 ```
+
+### Summary vs. Full Models
+
+List and grid queries return lightweight models to avoid fetching fields the UI does not need:
+
+- `library(...)` returns `PagedResult<MangaSummary>`
+- `sources(...)` returns `PagedResult<SourceSummary>`
+
+Use `manga(id:)` or `source(id:)` when the complete model is required. `MangaSummary` and `SourceSummary` conform to `MangaPreview` and `SourcePreview`, so generic list UI and the media helpers work with either tier.
+
+`Manga.categories` is `nil` when the endpoint did not request categories, and a (possibly empty) array when it did. Manga returned from mutations does not fetch categories.
 
 ### Read Manga & Chapters
 
@@ -96,7 +107,7 @@ let manga = try await client.manga(id: 1)
 
 // Fetch chapters for the manga (optionally filter unread or bookmarked)
 let chaptersResult = try await client.chapters(mangaId: manga.id, isRead: false)
-if let chapter = chaptersResult.items.first {
+if let chapter = chaptersResult.first {
     // Fetch chapter page URLs
     let pages = try await client.fetchChapterPages(chapterId: chapter.id)
     
@@ -117,6 +128,8 @@ if let chapter = chaptersResult.items.first {
 ```
 
 ### Media & Thumbnails
+
+Model fields such as `thumbnailPath` and `iconPath` are server-relative paths. Use the client helpers below to resolve them against the configured `baseURL`.
 
 ```swift
 // Get resolved URL for UI image loaders (Kingfisher, Nuke, AsyncImage)
@@ -158,20 +171,20 @@ swift build    # Build package
 
 - [x] Package layout and public product
 - [x] Apollo client and code generation
-- [x] Typed domain models (`Sendable`, `Equatable`, `Identifiable`, `Codable`)
+- [x] Typed domain models (`Sendable`, `Hashable`, `Identifiable`)
 - [x] Async/await `SuwayomiClient`
 - [x] Core models and operations (library, sources, extensions, categories)
 - [x] Chapter and page retrieval
 - [x] Media/image fetcher with auth & reverse proxy URL resolution
 - [x] Download queue management
 - [x] Error model (`SuwayomiError`)
-- [x] Unit test suite (`ClientTests`, `ModelTests`)
+- [x] Unit test suite (`ClientTests`, `ModelTests`, `ModelMappingTests`, `NetworkTests`)
 - [ ] Subscriptions / WebSockets for real-time download and update events
 - [ ] DocC documentation
 
 ## Contributing
 
-Issues and pull requests are welcome. Please keep changes focused, format code with `make format`, and make sure `make build` and `make test` pass before committing.
+Issues and pull requests are welcome. Please keep changes focused, format code with `make format`, and make sure `swift build` and `make test` pass before committing.
 
 ## License
 

@@ -11,7 +11,7 @@ public struct Extension: Identifiable, Hashable, Sendable {
     public let isInstalled: Bool
     public let hasUpdate: Bool
     public let isObsolete: Bool
-    public let iconURL: String
+    public let iconPath: String
     public let contentWarning: ContentWarning
 
     public init(
@@ -23,7 +23,7 @@ public struct Extension: Identifiable, Hashable, Sendable {
         isInstalled: Bool,
         hasUpdate: Bool,
         isObsolete: Bool,
-        iconURL: String,
+        iconPath: String,
         contentWarning: ContentWarning
     ) {
         self.pkgName = pkgName
@@ -34,7 +34,7 @@ public struct Extension: Identifiable, Hashable, Sendable {
         self.isInstalled = isInstalled
         self.hasUpdate = hasUpdate
         self.isObsolete = isObsolete
-        self.iconURL = iconURL
+        self.iconPath = iconPath
         self.contentWarning = contentWarning
     }
 
@@ -47,7 +47,7 @@ public struct Extension: Identifiable, Hashable, Sendable {
         self.isInstalled = fragment.isInstalled
         self.hasUpdate = fragment.hasUpdate
         self.isObsolete = fragment.isObsolete
-        self.iconURL = fragment.iconUrl
+        self.iconPath = fragment.iconUrl
         self.contentWarning = ContentWarning(fragment.contentWarning)
     }
 }

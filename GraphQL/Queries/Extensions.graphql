@@ -1,7 +1,10 @@
-query GetExtensions($condition: ExtensionConditionInput) {
-  extensions(condition: $condition) {
+query GetExtensions($condition: ExtensionConditionInput, $first: Int, $offset: Int) {
+  extensions(condition: $condition, first: $first, offset: $offset) {
     nodes {
       ...ExtensionFields
+    }
+    pageInfo {
+      ...PageInfoFields
     }
     totalCount
   }

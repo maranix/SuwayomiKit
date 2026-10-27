@@ -105,25 +105,13 @@ extension SuwayomiClient {
             throw SuwayomiError.missingData
         }
         let jobs = payload.updateStatus.jobsInfo
-        return LibraryJobsInfo(
-            isRunning: jobs.isRunning,
-            totalJobs: jobs.totalJobs,
-            finishedJobs: jobs.finishedJobs,
-            skippedCategoriesCount: jobs.skippedCategoriesCount,
-            skippedMangasCount: jobs.skippedMangasCount
-        )
+        return LibraryJobsInfo(jobs.fragments.libraryJobsInfoFields)
     }
 
     public func libraryUpdateStatus() async throws(SuwayomiError) -> LibraryJobsInfo {
         let data = try await query(GetLibraryUpdateStatusQuery())
         let jobs = data.libraryUpdateStatus.jobsInfo
-        return LibraryJobsInfo(
-            isRunning: jobs.isRunning,
-            totalJobs: jobs.totalJobs,
-            finishedJobs: jobs.finishedJobs,
-            skippedCategoriesCount: jobs.skippedCategoriesCount,
-            skippedMangasCount: jobs.skippedMangasCount
-        )
+        return LibraryJobsInfo(jobs.fragments.libraryJobsInfoFields)
     }
 
     public func stopLibraryUpdate() async throws(SuwayomiError) {

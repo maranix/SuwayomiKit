@@ -5,8 +5,10 @@ extension SuwayomiClient {
     public func extensions(
         isInstalled: Bool? = nil,
         hasUpdate: Bool? = nil,
-        lang: String? = nil
-    ) async throws(SuwayomiError) -> [Extension] {
+        lang: String? = nil,
+        first: Int? = nil,
+        offset: Int? = nil
+    ) async throws(SuwayomiError) -> PagedResult<Extension> {
         let condition: GraphQLNullable<ExtensionConditionInput> =
             (isInstalled != nil || hasUpdate != nil || lang != nil)
             ? .some(
@@ -16,8 +18,16 @@ extension SuwayomiClient {
                     lang: lang.map { .some($0) } ?? .none
                 ))
             : .none
-        let data = try await query(GetExtensionsQuery(condition: condition))
-        return data.extensions.nodes.map { Extension($0.fragments.extensionFields) }
+        let data = try await query(
+            GetExtensionsQuery(
+                condition: condition,
+                first: first.map { .some(Int32($0)) } ?? .none,
+                offset: offset.map { .some(Int32($0)) } ?? .none
+            )
+        )
+        let extensions = data.extensions.nodes.map { Extension($0.fragments.extensionFields) }
+        let pageInfo = PageInfo(data.extensions.pageInfo.fragments.pageInfoFields)
+        return PagedResult(items: extensions, pageInfo: pageInfo, totalCount: data.extensions.totalCount)
     }
 
     public func `extension`(pkgName: String) async throws(SuwayomiError) -> Extension {

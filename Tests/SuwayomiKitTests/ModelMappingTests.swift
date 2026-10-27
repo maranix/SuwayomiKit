@@ -107,6 +107,7 @@ struct ModelMappingTests {
         let sourceSummary = SourceSummary(SourceSummaryFields(_dataDict: sourceSummaryDict))
         #expect(sourceSummary.id == "dex-source-id")
         #expect(sourceSummary.displayName == "MangaDex (EN)")
+        #expect(sourceSummary.iconPath == "/static/dex.png")
         #expect(sourceSummary.supportsLatest == true)
 
         let sourceDict = DataDict(
@@ -149,7 +150,7 @@ struct ModelMappingTests {
         let summary = MangaSummary(MangaSummaryFields(_dataDict: summaryDict))
         #expect(summary.id == 101)
         #expect(summary.title == "One Piece")
-        #expect(summary.thumbnailURL == "/thumb/101.jpg")
+        #expect(summary.thumbnailPath == "/thumb/101.jpg")
         #expect(summary.inLibrary == true)
         #expect(summary.unreadCount == 45)
         #expect(summary.downloadCount == 10)
@@ -186,8 +187,23 @@ struct ModelMappingTests {
         #expect(manga.title == "One Piece")
         #expect(manga.status == .ongoing)
         #expect(manga.inLibraryAt?.timeIntervalSince1970 == 1_729_700_000)
+        #expect(manga.thumbnailLastFetchedAt?.timeIntervalSince1970 == 1_729_705_000)
         #expect(manga.realURL?.absoluteString == "https://example.com/op")
         #expect(manga.isInitialized == true)
+        #expect(manga.categories == nil)
+
+        let category = Category(
+            id: 1,
+            name: "Favorites",
+            order: 0,
+            isDefault: true,
+            isDefaultCategory: true,
+            includeInDownload: .include,
+            includeInUpdate: .include
+        )
+        let mangaWithCategories = Manga(MangaFields(_dataDict: mangaDict), categories: [category])
+        #expect(mangaWithCategories.categories?.count == 1)
+        #expect(mangaWithCategories.categories?.first?.id == 1)
     }
 
     @Test("ChapterFields, ExtensionFields, and PageInfoFields map correctly")
@@ -238,6 +254,7 @@ struct ModelMappingTests {
         let ext = Extension(ExtensionFields(_dataDict: extDict))
         #expect(ext.id == "eu.kanade.tachiyomi.extension.en.dex")
         #expect(ext.versionCode == "140")
+        #expect(ext.iconPath == "/icon.png")
         #expect(ext.contentWarning == .safe)
 
         let pageDict = DataDict(
@@ -254,5 +271,99 @@ struct ModelMappingTests {
         #expect(pageInfo.hasPreviousPage == false)
         #expect(pageInfo.startCursor == "start")
         #expect(pageInfo.endCursor == "end")
+    }
+
+    @Test("LibraryJobsInfoFields maps all job counters")
+    func testLibraryJobsInfoFragment() {
+        let jobsDict = DataDict(
+            data: [
+                "isRunning": true,
+                "totalJobs": 12,
+                "finishedJobs": 8,
+                "skippedCategoriesCount": 2,
+                "skippedMangasCount": 5,
+            ],
+            fulfilledFragments: [ObjectIdentifier(LibraryJobsInfoFields.self)]
+        )
+        let jobs = LibraryJobsInfo(LibraryJobsInfoFields(_dataDict: jobsDict))
+        #expect(jobs.isRunning == true)
+        #expect(jobs.totalJobs == 12)
+        #expect(jobs.finishedJobs == 8)
+        #expect(jobs.skippedCategoriesCount == 2)
+        #expect(jobs.skippedMangasCount == 5)
+    }
+
+    @Test("AboutServer payload maps buildTime and external URLs")
+    func testServerInfoMapping() {
+        let osDict = DataDict(
+            data: ["name": "Linux", "version": "6.1"],
+            fulfilledFragments: [
+                ObjectIdentifier(AboutServerQuery.Data.AboutServer.PlatformInfo.Os.self)
+            ]
+        )
+        let jvmDict = DataDict(
+            data: ["vmName": "OpenJDK", "javaVersion": "21"],
+            fulfilledFragments: [
+                ObjectIdentifier(AboutServerQuery.Data.AboutServer.PlatformInfo.Jvm.self)
+            ]
+        )
+        let platformDict = DataDict(
+            data: [
+                "headless": true,
+                "arch": "aarch64",
+                "os": osDict,
+                "jvm": jvmDict,
+            ],
+            fulfilledFragments: [
+                ObjectIdentifier(AboutServerQuery.Data.AboutServer.PlatformInfo.self)
+            ]
+        )
+        let aboutDict = DataDict(
+            data: [
+                "name": "Suwayomi-Server",
+                "version": "1.1.0",
+                "buildTime": API.LongString("1729700000000"),
+                "buildType": "Release",
+                "github": "https://github.com/Suwayomi/Suwayomi-Server",
+                "discord": "https://discord.gg/suwayomi",
+                "platformInfo": platformDict,
+            ],
+            fulfilledFragments: [ObjectIdentifier(AboutServerQuery.Data.AboutServer.self)]
+        )
+
+        let server = ServerInfo(AboutServerQuery.Data.AboutServer(_dataDict: aboutDict))
+        #expect(server.buildTime?.timeIntervalSince1970 == 1_729_700_000)
+        #expect(server.githubURL?.host == "github.com")
+        #expect(server.discordURL?.host == "discord.gg")
+        #expect(server.platform.headless == true)
+        #expect(server.platform.os.name == "Linux")
+        #expect(server.platform.jvm.javaVersion == "21")
+    }
+
+    @Test("Source conditions include contentWarning and collapse when empty")
+    func testSourceConditionMapping() {
+        guard
+            case .some(let condition) = SuwayomiClient.sourceCondition(
+                lang: "en",
+                name: nil,
+                contentWarning: .nsfw
+            )
+        else {
+            Issue.record("Expected a source condition")
+            return
+        }
+        #expect(condition.lang.unwrapped == "en")
+        #expect(condition.contentWarning.unwrapped?.value == .nsfw)
+
+        guard
+            case .none = SuwayomiClient.sourceCondition(
+                lang: nil,
+                name: nil,
+                contentWarning: nil
+            )
+        else {
+            Issue.record("Expected no source condition")
+            return
+        }
     }
 }

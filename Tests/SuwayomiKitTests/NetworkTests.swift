@@ -175,7 +175,7 @@ struct NetworkTests {
         let manga = MangaSummary(
             id: 1,
             title: "Manga",
-            thumbnailURL: "/api/v1/manga/1/thumbnail",
+            thumbnailPath: "/api/v1/manga/1/thumbnail",
             inLibrary: false,
             unreadCount: 0,
             downloadCount: 0,
@@ -184,10 +184,17 @@ struct NetworkTests {
         let thumbData = try await client.fetchThumbnail(for: manga)
         #expect(thumbData == mockData)
 
+        let directThumbData = try await client.fetchThumbnail(from: "/api/v1/manga/1/thumbnail")
+        #expect(directThumbData == mockData)
+
+        let fullManga = makeManga(id: 3, thumbnailPath: "/api/v1/manga/3/thumbnail")
+        let fullThumbData = try await client.fetchThumbnail(for: fullManga)
+        #expect(fullThumbData == mockData)
+
         let mangaNoThumb = MangaSummary(
             id: 2,
             title: "No Thumb",
-            thumbnailURL: nil,
+            thumbnailPath: nil,
             inLibrary: false,
             unreadCount: 0,
             downloadCount: 0,
@@ -201,7 +208,7 @@ struct NetworkTests {
             name: "Dex",
             displayName: "MangaDex",
             lang: "en",
-            iconURL: "/icon.png",
+            iconPath: "/icon.png",
             homeURL: nil,
             supportsLatest: true,
             isConfigurable: false,
@@ -209,6 +216,43 @@ struct NetworkTests {
         )
         let iconData = try await client.fetchIcon(for: source)
         #expect(iconData == mockData)
+
+        let sourceSummary = SourceSummary(
+            id: "2",
+            name: "Dex",
+            displayName: "MangaDex",
+            lang: "en",
+            iconPath: "/icon-2.png",
+            supportsLatest: true
+        )
+        let summaryIconData = try await client.fetchIcon(for: sourceSummary)
+        #expect(summaryIconData == mockData)
+
+        let sourceWithoutIcon = SourceSummary(
+            id: "3",
+            name: "No Icon",
+            displayName: "No Icon Source",
+            lang: "en",
+            iconPath: "",
+            supportsLatest: false
+        )
+        let noIconData = try await client.fetchIcon(for: sourceWithoutIcon)
+        #expect(noIconData == nil)
+
+        let extensionFixture = Extension(
+            pkgName: "eu.kanade.tachiyomi.extension.en.dex",
+            name: "MangaDex",
+            versionName: "1.4.0",
+            versionCode: "140",
+            lang: "en",
+            isInstalled: true,
+            hasUpdate: false,
+            isObsolete: false,
+            iconPath: "/icon-ext.png",
+            contentWarning: .safe
+        )
+        let extensionIconData = try await client.fetchIcon(for: extensionFixture)
+        #expect(extensionIconData == mockData)
 
         let pageData = try await client.fetchPageImageData(pagePathOrURL: "/api/v1/page/0")
         #expect(pageData == mockData)

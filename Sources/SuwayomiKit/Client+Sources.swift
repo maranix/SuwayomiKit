@@ -19,17 +19,15 @@ extension SuwayomiClient {
     public func sources(
         lang: String? = nil,
         name: String? = nil,
+        contentWarning: ContentWarning? = nil,
         first: Int? = nil,
         offset: Int? = nil
     ) async throws(SuwayomiError) -> PagedResult<SourceSummary> {
-        let condition: GraphQLNullable<SourceConditionInput> =
-            (lang != nil || name != nil)
-            ? .some(
-                SourceConditionInput(
-                    lang: lang.map { .some($0) } ?? .none,
-                    name: name.map { .some($0) } ?? .none
-                ))
-            : .none
+        let condition = Self.sourceCondition(
+            lang: lang,
+            name: name,
+            contentWarning: contentWarning
+        )
         let data = try await query(
             GetSourcesQuery(
                 condition: condition,
@@ -40,6 +38,23 @@ extension SuwayomiClient {
         let sources = data.sources.nodes.map { SourceSummary($0.fragments.sourceSummaryFields) }
         let pageInfo = PageInfo(data.sources.pageInfo.fragments.pageInfoFields)
         return PagedResult(items: sources, pageInfo: pageInfo, totalCount: data.sources.totalCount)
+    }
+
+    static func sourceCondition(
+        lang: String?,
+        name: String?,
+        contentWarning: ContentWarning?
+    ) -> GraphQLNullable<SourceConditionInput> {
+        guard lang != nil || name != nil || contentWarning != nil else {
+            return .none
+        }
+        return .some(
+            SourceConditionInput(
+                contentWarning: contentWarning.map { .some(GraphQLEnum($0.toAPI())) } ?? .none,
+                lang: lang.map { .some($0) } ?? .none,
+                name: name.map { .some($0) } ?? .none
+            )
+        )
     }
 
     public func source(id: String) async throws(SuwayomiError) -> Source {

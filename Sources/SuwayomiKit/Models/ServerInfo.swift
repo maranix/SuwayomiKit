@@ -38,7 +38,7 @@ public struct ServerInfo: Hashable, Sendable {
 
     public let name: String
     public let version: String
-    public let buildTime: String
+    public let buildTime: Date?
     public let buildType: String
     public let githubURL: URL?
     public let discordURL: URL?
@@ -47,7 +47,7 @@ public struct ServerInfo: Hashable, Sendable {
     public init(
         name: String,
         version: String,
-        buildTime: String,
+        buildTime: Date?,
         buildType: String,
         githubURL: URL?,
         discordURL: URL?,
@@ -65,7 +65,7 @@ public struct ServerInfo: Hashable, Sendable {
     init(_ server: API.AboutServerQuery.Data.AboutServer) {
         self.name = server.name
         self.version = server.version
-        self.buildTime = server.buildTime
+        self.buildTime = Date(epochMilliseconds: server.buildTime)
         self.buildType = server.buildType
         self.githubURL = URL(string: server.github)
         self.discordURL = URL(string: server.discord)

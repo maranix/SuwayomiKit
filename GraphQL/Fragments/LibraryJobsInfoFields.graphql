@@ -1,0 +1,7 @@
+fragment LibraryJobsInfoFields on UpdaterJobsInfoType {
+  isRunning
+  totalJobs
+  finishedJobs
+  skippedCategoriesCount
+  skippedMangasCount
+}

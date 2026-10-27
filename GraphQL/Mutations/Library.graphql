@@ -2,11 +2,7 @@ mutation UpdateLibrary($input: UpdateLibraryInput!) {
   updateLibrary(input: $input) {
     updateStatus {
       jobsInfo {
-        isRunning
-        totalJobs
-        finishedJobs
-        skippedCategoriesCount
-        skippedMangasCount
+        ...LibraryJobsInfoFields
       }
     }
   }
