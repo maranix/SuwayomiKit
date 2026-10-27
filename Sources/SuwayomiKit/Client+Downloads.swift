@@ -9,14 +9,14 @@ extension SuwayomiClient {
             DownloadItem(
                 position: item.position,
                 progress: item.progress,
-                state: DownloadState.from(item.state),
+                state: DownloadState(item.state),
                 tries: item.tries,
-                chapter: Chapter.from(item.chapter.fragments.chapterFields),
-                manga: Manga.from(item.manga.fragments.mangaFields)
+                chapter: Chapter(item.chapter.fragments.chapterFields),
+                manga: MangaSummary(item.manga.fragments.mangaSummaryFields)
             )
         }
         return DownloadQueueStatus(
-            state: DownloaderState.from(status.state),
+            state: DownloaderState(status.state),
             queue: queue
         )
     }
@@ -26,7 +26,7 @@ extension SuwayomiClient {
         guard let payload = data.startDownloader else {
             throw SuwayomiError.missingData
         }
-        return DownloaderState.from(payload.downloadStatus.state)
+        return DownloaderState(payload.downloadStatus.state)
     }
 
     public func stopDownloader() async throws(SuwayomiError) -> DownloaderState {
@@ -34,7 +34,7 @@ extension SuwayomiClient {
         guard let payload = data.stopDownloader else {
             throw SuwayomiError.missingData
         }
-        return DownloaderState.from(payload.downloadStatus.state)
+        return DownloaderState(payload.downloadStatus.state)
     }
 
     public func clearDownloader() async throws(SuwayomiError) -> DownloaderState {
@@ -42,7 +42,7 @@ extension SuwayomiClient {
         guard let payload = data.clearDownloader else {
             throw SuwayomiError.missingData
         }
-        return DownloaderState.from(payload.downloadStatus.state)
+        return DownloaderState(payload.downloadStatus.state)
     }
 
     public func enqueueDownload(chapterId: Int) async throws(SuwayomiError) -> DownloaderState {
@@ -50,7 +50,7 @@ extension SuwayomiClient {
         guard let payload = data.enqueueChapterDownload else {
             throw SuwayomiError.missingData
         }
-        return DownloaderState.from(payload.downloadStatus.state)
+        return DownloaderState(payload.downloadStatus.state)
     }
 
     public func dequeueDownload(chapterId: Int) async throws(SuwayomiError) -> DownloaderState {
@@ -58,7 +58,7 @@ extension SuwayomiClient {
         guard let payload = data.dequeueChapterDownload else {
             throw SuwayomiError.missingData
         }
-        return DownloaderState.from(payload.downloadStatus.state)
+        return DownloaderState(payload.downloadStatus.state)
     }
 
     public func deleteDownloadedChapter(chapterId: Int) async throws(SuwayomiError) -> Chapter {
@@ -66,6 +66,6 @@ extension SuwayomiClient {
         guard let payload = data.deleteDownloadedChapter else {
             throw SuwayomiError.missingData
         }
-        return Chapter.from(payload.chapters.fragments.chapterFields)
+        return Chapter(payload.chapters.fragments.chapterFields)
     }
 }

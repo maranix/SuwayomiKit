@@ -4,21 +4,12 @@ import Foundation
 extension SuwayomiClient {
     public func aboutServer() async throws(SuwayomiError) -> ServerInfo {
         let data = try await query(AboutServerQuery())
-        return ServerInfo.from(data.aboutServer)
+        return ServerInfo(data.aboutServer)
     }
 
     public func settings() async throws(SuwayomiError) -> ServerSettings {
         let data = try await query(GetSettingsQuery())
-        let s = data.settings
-        return ServerSettings(
-            ip: s.ip,
-            port: s.port,
-            authMode: AuthMode.from(s.authMode),
-            authUsername: s.authUsername,
-            downloadsPath: s.downloadsPath,
-            autoDownloadNewChapters: s.autoDownloadNewChapters,
-            maxSourcesInParallel: s.maxSourcesInParallel
-        )
+        return ServerSettings(data.settings)
     }
 
     public func clearCachedImages(

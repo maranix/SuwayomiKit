@@ -136,9 +136,33 @@ struct ClientTests {
         let baseURL = URL(string: "http://localhost:4567")!
         let client = SuwayomiClient(baseURL: baseURL)
 
-        let mangaWithThumb = Manga(id: 1, title: "Title", thumbnailUrl: "/api/v1/manga/1/thumbnail")
-        let mangaNoThumb = Manga(id: 2, title: "Title 2", thumbnailUrl: nil)
-        let mangaEmptyThumb = Manga(id: 3, title: "Title 3", thumbnailUrl: "")
+        let mangaWithThumb = MangaSummary(
+            id: 1,
+            title: "Title",
+            thumbnailURL: "/api/v1/manga/1/thumbnail",
+            inLibrary: false,
+            unreadCount: 0,
+            downloadCount: 0,
+            sourceID: "1"
+        )
+        let mangaNoThumb = MangaSummary(
+            id: 2,
+            title: "Title 2",
+            thumbnailURL: nil,
+            inLibrary: false,
+            unreadCount: 0,
+            downloadCount: 0,
+            sourceID: "1"
+        )
+        let mangaEmptyThumb = MangaSummary(
+            id: 3,
+            title: "Title 3",
+            thumbnailURL: "",
+            inLibrary: false,
+            unreadCount: 0,
+            downloadCount: 0,
+            sourceID: "1"
+        )
 
         #expect(
             client.thumbnailURL(for: mangaWithThumb)?.absoluteString

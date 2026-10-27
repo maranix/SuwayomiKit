@@ -1,9 +1,9 @@
 import API
 import Foundation
 
-public struct Chapter: Sendable, Equatable, Identifiable, Codable {
+public struct Chapter: Identifiable, Hashable, Sendable {
     public let id: Int
-    public let mangaId: Int
+    public let mangaID: Int
     public let name: String
     public let chapterNumber: Double
     public let pageCount: Int
@@ -11,17 +11,17 @@ public struct Chapter: Sendable, Equatable, Identifiable, Codable {
     public let isDownloaded: Bool
     public let isRead: Bool
     public let lastPageRead: Int
-    public let lastReadAt: String
-    public let uploadDate: String
-    public let fetchedAt: String
+    public let lastReadAt: Date?
+    public let uploadDate: Date?
+    public let fetchedAt: Date?
     public let scanlator: String?
     public let sourceOrder: Int
     public let url: String
-    public let realUrl: String?
+    public let realURL: URL?
 
     public init(
         id: Int,
-        mangaId: Int,
+        mangaID: Int,
         name: String,
         chapterNumber: Double,
         pageCount: Int,
@@ -29,16 +29,16 @@ public struct Chapter: Sendable, Equatable, Identifiable, Codable {
         isDownloaded: Bool,
         isRead: Bool,
         lastPageRead: Int,
-        lastReadAt: String,
-        uploadDate: String,
-        fetchedAt: String,
-        scanlator: String? = nil,
+        lastReadAt: Date?,
+        uploadDate: Date?,
+        fetchedAt: Date?,
+        scanlator: String?,
         sourceOrder: Int,
         url: String,
-        realUrl: String? = nil
+        realURL: URL?
     ) {
         self.id = id
-        self.mangaId = mangaId
+        self.mangaID = mangaID
         self.name = name
         self.chapterNumber = chapterNumber
         self.pageCount = pageCount
@@ -52,29 +52,25 @@ public struct Chapter: Sendable, Equatable, Identifiable, Codable {
         self.scanlator = scanlator
         self.sourceOrder = sourceOrder
         self.url = url
-        self.realUrl = realUrl
+        self.realURL = realURL
     }
-}
 
-extension Chapter {
-    static func from(_ fragment: API.ChapterFields) -> Chapter {
-        Chapter(
-            id: fragment.id,
-            mangaId: fragment.mangaId,
-            name: fragment.name,
-            chapterNumber: Double(fragment.chapterNumber),
-            pageCount: fragment.pageCount,
-            isBookmarked: fragment.isBookmarked,
-            isDownloaded: fragment.isDownloaded,
-            isRead: fragment.isRead,
-            lastPageRead: fragment.lastPageRead,
-            lastReadAt: fragment.lastReadAt,
-            uploadDate: fragment.uploadDate,
-            fetchedAt: fragment.fetchedAt,
-            scanlator: fragment.scanlator,
-            sourceOrder: fragment.sourceOrder,
-            url: fragment.url,
-            realUrl: fragment.realUrl
-        )
+    init(_ fragment: API.ChapterFields) {
+        self.id = fragment.id
+        self.mangaID = fragment.mangaId
+        self.name = fragment.name
+        self.chapterNumber = Double(fragment.chapterNumber)
+        self.pageCount = fragment.pageCount
+        self.isBookmarked = fragment.isBookmarked
+        self.isDownloaded = fragment.isDownloaded
+        self.isRead = fragment.isRead
+        self.lastPageRead = fragment.lastPageRead
+        self.lastReadAt = Date(epochMilliseconds: fragment.lastReadAt)
+        self.uploadDate = Date(epochMilliseconds: fragment.uploadDate)
+        self.fetchedAt = Date(epochMilliseconds: fragment.fetchedAt)
+        self.scanlator = fragment.scanlator
+        self.sourceOrder = fragment.sourceOrder
+        self.url = fragment.url
+        self.realURL = fragment.realUrl.flatMap(URL.init(string:))
     }
 }

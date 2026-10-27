@@ -172,11 +172,27 @@ struct NetworkTests {
             urlSession: session
         )
 
-        let manga = Manga(id: 1, title: "Manga", thumbnailUrl: "/api/v1/manga/1/thumbnail")
+        let manga = MangaSummary(
+            id: 1,
+            title: "Manga",
+            thumbnailURL: "/api/v1/manga/1/thumbnail",
+            inLibrary: false,
+            unreadCount: 0,
+            downloadCount: 0,
+            sourceID: "1"
+        )
         let thumbData = try await client.fetchThumbnail(for: manga)
         #expect(thumbData == mockData)
 
-        let mangaNoThumb = Manga(id: 2, title: "No Thumb", thumbnailUrl: nil)
+        let mangaNoThumb = MangaSummary(
+            id: 2,
+            title: "No Thumb",
+            thumbnailURL: nil,
+            inLibrary: false,
+            unreadCount: 0,
+            downloadCount: 0,
+            sourceID: "1"
+        )
         let noThumbData = try await client.fetchThumbnail(for: mangaNoThumb)
         #expect(noThumbData == nil)
 
@@ -185,7 +201,8 @@ struct NetworkTests {
             name: "Dex",
             displayName: "MangaDex",
             lang: "en",
-            iconUrl: "/icon.png",
+            iconURL: "/icon.png",
+            homeURL: nil,
             supportsLatest: true,
             isConfigurable: false,
             contentWarning: .safe

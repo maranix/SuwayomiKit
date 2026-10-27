@@ -1,7 +1,7 @@
 import API
 import Foundation
 
-public enum MangaStatus: String, Sendable, Equatable, Codable {
+public enum MangaStatus: String, Sendable, Hashable, CaseIterable {
     case unknown
     case ongoing
     case completed
@@ -9,14 +9,71 @@ public enum MangaStatus: String, Sendable, Equatable, Codable {
     case publishingFinished
     case cancelled
     case onHiatus
+
+    init(_ apiValue: API.GraphQLEnum<API.MangaStatus>?) {
+        switch apiValue?.value {
+        case .ongoing: self = .ongoing
+        case .completed: self = .completed
+        case .licensed: self = .licensed
+        case .publishingFinished: self = .publishingFinished
+        case .cancelled: self = .cancelled
+        case .onHiatus: self = .onHiatus
+        case .unknown, .none: self = .unknown
+        }
+    }
 }
 
-public enum UpdateStrategy: String, Sendable, Equatable, Codable {
+public enum UpdateStrategy: String, Sendable, Hashable, CaseIterable {
     case alwaysUpdate
     case onlyFetchOnce
+
+    init(_ apiValue: API.GraphQLEnum<API.UpdateStrategy>?) {
+        switch apiValue?.value {
+        case .onlyFetchOnce: self = .onlyFetchOnce
+        case .alwaysUpdate, .none: self = .alwaysUpdate
+        }
+    }
 }
 
-public struct Manga: Sendable, Equatable, Identifiable, Codable {
+public struct MangaSummary: Identifiable, Hashable, Sendable {
+    public let id: Int
+    public let title: String
+    public let thumbnailURL: String?
+    public let inLibrary: Bool
+    public let unreadCount: Int
+    public let downloadCount: Int
+    public let sourceID: String
+
+    public init(
+        id: Int,
+        title: String,
+        thumbnailURL: String?,
+        inLibrary: Bool,
+        unreadCount: Int,
+        downloadCount: Int,
+        sourceID: String
+    ) {
+        self.id = id
+        self.title = title
+        self.thumbnailURL = thumbnailURL
+        self.inLibrary = inLibrary
+        self.unreadCount = unreadCount
+        self.downloadCount = downloadCount
+        self.sourceID = sourceID
+    }
+
+    init(_ fragment: API.MangaSummaryFields) {
+        self.id = fragment.id
+        self.title = fragment.title
+        self.thumbnailURL = fragment.thumbnailUrl
+        self.inLibrary = fragment.inLibrary
+        self.unreadCount = fragment.unreadCount
+        self.downloadCount = fragment.downloadCount
+        self.sourceID = fragment.sourceId
+    }
+}
+
+public struct Manga: Identifiable, Hashable, Sendable {
     public let id: Int
     public let title: String
     public let artist: String?
@@ -25,44 +82,44 @@ public struct Manga: Sendable, Equatable, Identifiable, Codable {
     public let genre: [String]
     public let status: MangaStatus
     public let inLibrary: Bool
-    public let inLibraryAt: String
-    public let thumbnailUrl: String?
-    public let thumbnailUrlLastFetched: String?
-    public let sourceId: String
+    public let inLibraryAt: Date?
+    public let thumbnailURL: String?
+    public let thumbnailUrlLastFetched: Date?
+    public let sourceID: String
     public let url: String
-    public let realUrl: String?
+    public let realURL: URL?
     public let unreadCount: Int
     public let downloadCount: Int
     public let bookmarkCount: Int
     public let updateStrategy: UpdateStrategy
-    public let initialized: Bool
-    public let lastFetchedAt: String?
-    public let chaptersLastFetchedAt: String?
-    public let categories: [Category]?
+    public let isInitialized: Bool
+    public let lastFetchedAt: Date?
+    public let chaptersLastFetchedAt: Date?
+    public let categories: [Category]
 
     public init(
         id: Int,
         title: String,
-        artist: String? = nil,
-        author: String? = nil,
-        description: String? = nil,
-        genre: [String] = [],
-        status: MangaStatus = .unknown,
-        inLibrary: Bool = false,
-        inLibraryAt: String = "",
-        thumbnailUrl: String? = nil,
-        thumbnailUrlLastFetched: String? = nil,
-        sourceId: String = "",
-        url: String = "",
-        realUrl: String? = nil,
-        unreadCount: Int = 0,
-        downloadCount: Int = 0,
-        bookmarkCount: Int = 0,
-        updateStrategy: UpdateStrategy = .alwaysUpdate,
-        initialized: Bool = false,
-        lastFetchedAt: String? = nil,
-        chaptersLastFetchedAt: String? = nil,
-        categories: [Category]? = nil
+        artist: String?,
+        author: String?,
+        description: String?,
+        genre: [String],
+        status: MangaStatus,
+        inLibrary: Bool,
+        inLibraryAt: Date?,
+        thumbnailURL: String?,
+        thumbnailUrlLastFetched: Date?,
+        sourceID: String,
+        url: String,
+        realURL: URL?,
+        unreadCount: Int,
+        downloadCount: Int,
+        bookmarkCount: Int,
+        updateStrategy: UpdateStrategy,
+        isInitialized: Bool,
+        lastFetchedAt: Date?,
+        chaptersLastFetchedAt: Date?,
+        categories: [Category] = []
     ) {
         self.id = id
         self.title = title
@@ -73,70 +130,43 @@ public struct Manga: Sendable, Equatable, Identifiable, Codable {
         self.status = status
         self.inLibrary = inLibrary
         self.inLibraryAt = inLibraryAt
-        self.thumbnailUrl = thumbnailUrl
+        self.thumbnailURL = thumbnailURL
         self.thumbnailUrlLastFetched = thumbnailUrlLastFetched
-        self.sourceId = sourceId
+        self.sourceID = sourceID
         self.url = url
-        self.realUrl = realUrl
+        self.realURL = realURL
         self.unreadCount = unreadCount
         self.downloadCount = downloadCount
         self.bookmarkCount = bookmarkCount
         self.updateStrategy = updateStrategy
-        self.initialized = initialized
+        self.isInitialized = isInitialized
         self.lastFetchedAt = lastFetchedAt
         self.chaptersLastFetchedAt = chaptersLastFetchedAt
         self.categories = categories
     }
-}
 
-extension MangaStatus {
-    static func from(_ apiValue: API.GraphQLEnum<API.MangaStatus>?) -> MangaStatus {
-        switch apiValue?.value {
-        case .unknown, .none: return .unknown
-        case .ongoing: return .ongoing
-        case .completed: return .completed
-        case .licensed: return .licensed
-        case .publishingFinished: return .publishingFinished
-        case .cancelled: return .cancelled
-        case .onHiatus: return .onHiatus
-        }
-    }
-}
-
-extension UpdateStrategy {
-    static func from(_ apiValue: API.GraphQLEnum<API.UpdateStrategy>?) -> UpdateStrategy {
-        switch apiValue?.value {
-        case .alwaysUpdate, .none: return .alwaysUpdate
-        case .onlyFetchOnce: return .onlyFetchOnce
-        }
-    }
-}
-
-extension Manga {
-    static func from(_ fragment: API.MangaFields, categories: [Category]? = nil) -> Manga {
-        Manga(
-            id: fragment.id,
-            title: fragment.title,
-            artist: fragment.artist,
-            author: fragment.author,
-            description: fragment.description,
-            genre: fragment.genre,
-            status: MangaStatus.from(fragment.status),
-            inLibrary: fragment.inLibrary,
-            inLibraryAt: fragment.inLibraryAt,
-            thumbnailUrl: fragment.thumbnailUrl,
-            thumbnailUrlLastFetched: fragment.thumbnailUrlLastFetched,
-            sourceId: fragment.sourceId,
-            url: fragment.url,
-            realUrl: fragment.realUrl,
-            unreadCount: fragment.unreadCount,
-            downloadCount: fragment.downloadCount,
-            bookmarkCount: fragment.bookmarkCount,
-            updateStrategy: UpdateStrategy.from(fragment.updateStrategy),
-            initialized: fragment.initialized,
-            lastFetchedAt: fragment.lastFetchedAt,
-            chaptersLastFetchedAt: fragment.chaptersLastFetchedAt,
-            categories: categories
-        )
+    init(_ fragment: API.MangaFields, categories: [Category] = []) {
+        self.id = fragment.id
+        self.title = fragment.title
+        self.artist = fragment.artist
+        self.author = fragment.author
+        self.description = fragment.description
+        self.genre = fragment.genre
+        self.status = MangaStatus(fragment.status)
+        self.inLibrary = fragment.inLibrary
+        self.inLibraryAt = Date(epochMilliseconds: fragment.inLibraryAt)
+        self.thumbnailURL = fragment.thumbnailUrl
+        self.thumbnailUrlLastFetched = Date(epochMilliseconds: fragment.thumbnailUrlLastFetched)
+        self.sourceID = fragment.sourceId
+        self.url = fragment.url
+        self.realURL = fragment.realUrl.flatMap(URL.init(string:))
+        self.unreadCount = fragment.unreadCount
+        self.downloadCount = fragment.downloadCount
+        self.bookmarkCount = fragment.bookmarkCount
+        self.updateStrategy = UpdateStrategy(fragment.updateStrategy)
+        self.isInitialized = fragment.initialized
+        self.lastFetchedAt = Date(epochMilliseconds: fragment.lastFetchedAt)
+        self.chaptersLastFetchedAt = Date(epochMilliseconds: fragment.chaptersLastFetchedAt)
+        self.categories = categories
     }
 }

@@ -21,7 +21,7 @@ extension SuwayomiClient {
         name: String? = nil,
         first: Int? = nil,
         offset: Int? = nil
-    ) async throws(SuwayomiError) -> PagedResult<Source> {
+    ) async throws(SuwayomiError) -> PagedResult<SourceSummary> {
         let condition: GraphQLNullable<SourceConditionInput> =
             (lang != nil || name != nil)
             ? .some(
@@ -37,19 +37,14 @@ extension SuwayomiClient {
                 offset: offset.map { .some(Int32($0)) } ?? .none
             )
         )
-        let sources = data.sources.nodes.map { Source.from($0.fragments.sourceFields) }
-        let pageInfo = PageInfo(
-            hasNextPage: data.sources.pageInfo.fragments.pageInfoFields.hasNextPage,
-            hasPreviousPage: data.sources.pageInfo.fragments.pageInfoFields.hasPreviousPage,
-            startCursor: data.sources.pageInfo.fragments.pageInfoFields.startCursor,
-            endCursor: data.sources.pageInfo.fragments.pageInfoFields.endCursor
-        )
+        let sources = data.sources.nodes.map { SourceSummary($0.fragments.sourceSummaryFields) }
+        let pageInfo = PageInfo(data.sources.pageInfo.fragments.pageInfoFields)
         return PagedResult(items: sources, pageInfo: pageInfo, totalCount: data.sources.totalCount)
     }
 
     public func source(id: String) async throws(SuwayomiError) -> Source {
         let data = try await query(GetSourceQuery(id: id))
-        return Source.from(data.source.fragments.sourceFields)
+        return Source(data.source.fragments.sourceFields)
     }
 
     public func fetchSourceManga(
@@ -57,7 +52,7 @@ extension SuwayomiClient {
         type: SourceMangaType = .popular,
         page: Int = 1,
         query searchQuery: String? = nil
-    ) async throws(SuwayomiError) -> (mangas: [Manga], hasNextPage: Bool) {
+    ) async throws(SuwayomiError) -> (mangas: [MangaSummary], hasNextPage: Bool) {
         let input = FetchSourceMangaInput(
             page: Int32(page),
             query: searchQuery.map { .some($0) } ?? .none,
@@ -70,7 +65,7 @@ extension SuwayomiClient {
         guard let payload = data.fetchSourceManga else {
             throw SuwayomiError.missingData
         }
-        let mangas = payload.mangas.map { Manga.from($0.fragments.mangaFields) }
+        let mangas = payload.mangas.map { MangaSummary($0.fragments.mangaSummaryFields) }
         return (mangas: mangas, hasNextPage: payload.hasNextPage)
     }
 }

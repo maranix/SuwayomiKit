@@ -1,13 +1,29 @@
 import API
 import Foundation
 
-public enum CategoryIncludeOrExclude: String, Sendable, Equatable, Codable {
+public enum CategoryIncludeOrExclude: String, Sendable, Hashable, CaseIterable {
     case exclude
     case include
     case unset
+
+    init(_ apiValue: API.GraphQLEnum<API.IncludeOrExclude>?) {
+        switch apiValue?.value {
+        case .exclude: self = .exclude
+        case .include: self = .include
+        case .unset, .none: self = .unset
+        }
+    }
+
+    func toAPI() -> API.IncludeOrExclude {
+        switch self {
+        case .exclude: return .exclude
+        case .include: return .include
+        case .unset: return .unset
+        }
+    }
 }
 
-public struct Category: Sendable, Equatable, Identifiable, Codable {
+public struct Category: Identifiable, Hashable, Sendable {
     public let id: Int
     public let name: String
     public let order: Int
@@ -33,36 +49,14 @@ public struct Category: Sendable, Equatable, Identifiable, Codable {
         self.includeInDownload = includeInDownload
         self.includeInUpdate = includeInUpdate
     }
-}
 
-extension CategoryIncludeOrExclude {
-    static func from(_ apiValue: API.GraphQLEnum<API.IncludeOrExclude>?) -> CategoryIncludeOrExclude {
-        switch apiValue?.value {
-        case .exclude: return .exclude
-        case .include: return .include
-        case .unset, .none: return .unset
-        }
-    }
-
-    public func toAPI() -> API.IncludeOrExclude {
-        switch self {
-        case .exclude: return .exclude
-        case .include: return .include
-        case .unset: return .unset
-        }
-    }
-}
-
-extension Category {
-    static func from(_ fragment: API.CategoryFields) -> Category {
-        Category(
-            id: fragment.id,
-            name: fragment.name,
-            order: fragment.order,
-            isDefault: fragment.default,
-            isDefaultCategory: fragment.isDefaultCategory,
-            includeInDownload: CategoryIncludeOrExclude.from(fragment.includeInDownload),
-            includeInUpdate: CategoryIncludeOrExclude.from(fragment.includeInUpdate)
-        )
+    init(_ fragment: API.CategoryFields) {
+        self.id = fragment.id
+        self.name = fragment.name
+        self.order = fragment.order
+        self.isDefault = fragment.default
+        self.isDefaultCategory = fragment.isDefaultCategory
+        self.includeInDownload = CategoryIncludeOrExclude(fragment.includeInDownload)
+        self.includeInUpdate = CategoryIncludeOrExclude(fragment.includeInUpdate)
     }
 }

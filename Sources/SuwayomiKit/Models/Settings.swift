@@ -1,14 +1,27 @@
 import API
 import Foundation
 
-public enum AuthMode: String, Sendable, Equatable, Codable {
+public enum AuthMode: String, Sendable, Hashable, CaseIterable {
     case none
     case basicAuth
     case simpleLogin
     case uiLogin
+
+    init(_ apiValue: API.GraphQLEnum<API.AuthMode>?) {
+        guard let value = apiValue?.value else {
+            self = .none
+            return
+        }
+        switch value {
+        case .none: self = .none
+        case .basicAuth: self = .basicAuth
+        case .simpleLogin: self = .simpleLogin
+        case .uiLogin: self = .uiLogin
+        }
+    }
 }
 
-public struct ServerSettings: Sendable, Equatable, Codable {
+public struct ServerSettings: Hashable, Sendable {
     public let ip: String
     public let port: Int
     public let authMode: AuthMode
@@ -34,16 +47,14 @@ public struct ServerSettings: Sendable, Equatable, Codable {
         self.autoDownloadNewChapters = autoDownloadNewChapters
         self.maxSourcesInParallel = maxSourcesInParallel
     }
-}
 
-extension AuthMode {
-    static func from(_ apiValue: API.GraphQLEnum<API.AuthMode>?) -> AuthMode {
-        guard let value = apiValue?.value else { return .none }
-        switch value {
-        case .none: return .none
-        case .basicAuth: return .basicAuth
-        case .simpleLogin: return .simpleLogin
-        case .uiLogin: return .uiLogin
-        }
+    init(_ settings: API.GetSettingsQuery.Data.Settings) {
+        self.ip = settings.ip
+        self.port = settings.port
+        self.authMode = AuthMode(settings.authMode)
+        self.authUsername = settings.authUsername
+        self.downloadsPath = settings.downloadsPath
+        self.autoDownloadNewChapters = settings.autoDownloadNewChapters
+        self.maxSourcesInParallel = settings.maxSourcesInParallel
     }
 }

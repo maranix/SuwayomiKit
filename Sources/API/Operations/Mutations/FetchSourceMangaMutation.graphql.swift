@@ -8,8 +8,8 @@ nonisolated public struct FetchSourceMangaMutation: GraphQLMutation {
   public static let operationName: String = "FetchSourceManga"
   public static let operationDocument: ApolloAPI.OperationDocument = .init(
     definition: .init(
-      #"mutation FetchSourceManga($input: FetchSourceMangaInput!) { fetchSourceManga(input: $input) { __typename hasNextPage mangas { __typename ...MangaFields } } }"#,
-      fragments: [MangaFields.self]
+      #"mutation FetchSourceManga($input: FetchSourceMangaInput!) { fetchSourceManga(input: $input) { __typename hasNextPage mangas { __typename ...MangaSummaryFields } } }"#,
+      fragments: [MangaSummaryFields.self]
     ))
 
   public var input: FetchSourceMangaInput
@@ -64,40 +64,26 @@ nonisolated public struct FetchSourceMangaMutation: GraphQLMutation {
         @_spi(Execution) public static var __parentType: any ApolloAPI.ParentType { API.Objects.MangaType }
         @_spi(Execution) public static var __selections: [ApolloAPI.Selection] { [
           .field("__typename", String.self),
-          .fragment(MangaFields.self),
+          .fragment(MangaSummaryFields.self),
         ] }
         @_spi(Execution) public static var __fulfilledFragments: [any ApolloAPI.SelectionSet.Type] { [
           FetchSourceMangaMutation.Data.FetchSourceManga.Manga.self,
-          MangaFields.self
+          MangaSummaryFields.self
         ] }
 
         public var id: Int { __data["id"] }
         public var title: String { __data["title"] }
-        public var artist: String? { __data["artist"] }
-        public var author: String? { __data["author"] }
-        public var description: String? { __data["description"] }
-        public var genre: [String] { __data["genre"] }
-        public var status: GraphQLEnum<API.MangaStatus> { __data["status"] }
-        public var inLibrary: Bool { __data["inLibrary"] }
-        public var inLibraryAt: API.LongString { __data["inLibraryAt"] }
         public var thumbnailUrl: String? { __data["thumbnailUrl"] }
-        public var thumbnailUrlLastFetched: API.LongString? { __data["thumbnailUrlLastFetched"] }
-        public var sourceId: API.LongString { __data["sourceId"] }
-        public var url: String { __data["url"] }
-        public var realUrl: String? { __data["realUrl"] }
+        public var inLibrary: Bool { __data["inLibrary"] }
         public var unreadCount: Int { __data["unreadCount"] }
         public var downloadCount: Int { __data["downloadCount"] }
-        public var bookmarkCount: Int { __data["bookmarkCount"] }
-        public var updateStrategy: GraphQLEnum<API.UpdateStrategy> { __data["updateStrategy"] }
-        public var initialized: Bool { __data["initialized"] }
-        public var lastFetchedAt: API.LongString? { __data["lastFetchedAt"] }
-        public var chaptersLastFetchedAt: API.LongString? { __data["chaptersLastFetchedAt"] }
+        public var sourceId: API.LongString { __data["sourceId"] }
 
         public struct Fragments: FragmentContainer {
           @_spi(Unsafe) public let __data: DataDict
           @_spi(Unsafe) public init(_dataDict: DataDict) { __data = _dataDict }
 
-          public var mangaFields: MangaFields { _toFragment() }
+          public var mangaSummaryFields: MangaSummaryFields { _toFragment() }
         }
       }
     }

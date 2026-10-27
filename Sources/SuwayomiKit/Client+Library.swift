@@ -8,7 +8,7 @@ extension SuwayomiClient {
         first: Int? = nil,
         offset: Int? = nil,
         inLibrary: Bool = true
-    ) async throws(SuwayomiError) -> PagedResult<Manga> {
+    ) async throws(SuwayomiError) -> PagedResult<MangaSummary> {
         let condition = MangaConditionInput(
             categoryIds: categoryId.map { .some([Int32($0)]) } ?? .none,
             inLibrary: .some(inLibrary),
@@ -21,24 +21,19 @@ extension SuwayomiClient {
                 offset: offset.map { .some(Int32($0)) } ?? .none
             )
         )
-        let mangas = data.mangas.nodes.map { Manga.from($0.fragments.mangaFields) }
-        let pageInfo = PageInfo(
-            hasNextPage: data.mangas.pageInfo.fragments.pageInfoFields.hasNextPage,
-            hasPreviousPage: data.mangas.pageInfo.fragments.pageInfoFields.hasPreviousPage,
-            startCursor: data.mangas.pageInfo.fragments.pageInfoFields.startCursor,
-            endCursor: data.mangas.pageInfo.fragments.pageInfoFields.endCursor
-        )
+        let mangas = data.mangas.nodes.map { MangaSummary($0.fragments.mangaSummaryFields) }
+        let pageInfo = PageInfo(data.mangas.pageInfo.fragments.pageInfoFields)
         return PagedResult(items: mangas, pageInfo: pageInfo, totalCount: data.mangas.totalCount)
     }
 
     public func categories() async throws(SuwayomiError) -> [Category] {
         let data = try await query(GetCategoriesQuery())
-        return data.categories.nodes.map { Category.from($0.fragments.categoryFields) }
+        return data.categories.nodes.map { Category($0.fragments.categoryFields) }
     }
 
     public func category(id: Int) async throws(SuwayomiError) -> Category {
         let data = try await query(GetCategoryQuery(id: Int32(id)))
-        return Category.from(data.category.fragments.categoryFields)
+        return Category(data.category.fragments.categoryFields)
     }
 
     public func createCategory(
@@ -61,7 +56,7 @@ extension SuwayomiClient {
         guard let payload = data.createCategory else {
             throw SuwayomiError.missingData
         }
-        return Category.from(payload.category.fragments.categoryFields)
+        return Category(payload.category.fragments.categoryFields)
     }
 
     public func updateCategory(
@@ -83,7 +78,7 @@ extension SuwayomiClient {
         guard let payload = data.updateCategory else {
             throw SuwayomiError.missingData
         }
-        return Category.from(payload.category.fragments.categoryFields)
+        return Category(payload.category.fragments.categoryFields)
     }
 
     public func deleteCategory(id: Int) async throws(SuwayomiError) {
@@ -97,7 +92,7 @@ extension SuwayomiClient {
         guard let payload = data.updateCategoryOrder else {
             throw SuwayomiError.missingData
         }
-        return payload.categories.map { Category.from($0.fragments.categoryFields) }
+        return payload.categories.map { Category($0.fragments.categoryFields) }
     }
 
     public func updateLibrary(categories: [Int]? = nil) async throws(SuwayomiError) -> LibraryJobsInfo {
@@ -113,7 +108,9 @@ extension SuwayomiClient {
         return LibraryJobsInfo(
             isRunning: jobs.isRunning,
             totalJobs: jobs.totalJobs,
-            finishedJobs: jobs.finishedJobs
+            finishedJobs: jobs.finishedJobs,
+            skippedCategoriesCount: jobs.skippedCategoriesCount,
+            skippedMangasCount: jobs.skippedMangasCount
         )
     }
 

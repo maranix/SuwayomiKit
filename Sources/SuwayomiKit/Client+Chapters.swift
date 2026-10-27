@@ -22,19 +22,14 @@ extension SuwayomiClient {
                 offset: offset.map { .some(Int32($0)) } ?? .none
             )
         )
-        let chapters = data.chapters.nodes.map { Chapter.from($0.fragments.chapterFields) }
-        let pageInfo = PageInfo(
-            hasNextPage: data.chapters.pageInfo.fragments.pageInfoFields.hasNextPage,
-            hasPreviousPage: data.chapters.pageInfo.fragments.pageInfoFields.hasPreviousPage,
-            startCursor: data.chapters.pageInfo.fragments.pageInfoFields.startCursor,
-            endCursor: data.chapters.pageInfo.fragments.pageInfoFields.endCursor
-        )
+        let chapters = data.chapters.nodes.map { Chapter($0.fragments.chapterFields) }
+        let pageInfo = PageInfo(data.chapters.pageInfo.fragments.pageInfoFields)
         return PagedResult(items: chapters, pageInfo: pageInfo, totalCount: data.chapters.totalCount)
     }
 
     public func chapter(id: Int) async throws(SuwayomiError) -> Chapter {
         let data = try await query(GetChapterQuery(id: Int32(id)))
-        return Chapter.from(data.chapter.fragments.chapterFields)
+        return Chapter(data.chapter.fragments.chapterFields)
     }
 
     public func updateChapter(
@@ -54,7 +49,7 @@ extension SuwayomiClient {
         guard let payload = data.updateChapter else {
             throw SuwayomiError.missingData
         }
-        return Chapter.from(payload.chapter.fragments.chapterFields)
+        return Chapter(payload.chapter.fragments.chapterFields)
     }
 
     public func fetchChapterPages(chapterId: Int) async throws(SuwayomiError) -> [String] {

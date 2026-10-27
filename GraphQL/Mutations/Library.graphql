@@ -5,6 +5,8 @@ mutation UpdateLibrary($input: UpdateLibraryInput!) {
         isRunning
         totalJobs
         finishedJobs
+        skippedCategoriesCount
+        skippedMangasCount
       }
     }
   }

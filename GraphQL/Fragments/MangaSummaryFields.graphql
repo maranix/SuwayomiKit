@@ -1,0 +1,9 @@
+fragment MangaSummaryFields on MangaType {
+  id
+  title
+  thumbnailUrl
+  inLibrary
+  unreadCount
+  downloadCount
+  sourceId
+}

@@ -4,8 +4,8 @@ import Foundation
 extension SuwayomiClient {
     public func manga(id: Int) async throws(SuwayomiError) -> Manga {
         let data = try await query(GetMangaQuery(id: Int32(id)))
-        let cats = data.manga.categories.nodes.map { Category.from($0.fragments.categoryFields) }
-        return Manga.from(data.manga.fragments.mangaFields, categories: cats)
+        let cats = data.manga.categories.nodes.map { Category($0.fragments.categoryFields) }
+        return Manga(data.manga.fragments.mangaFields, categories: cats)
     }
 
     public func fetchMangaAndChapters(
@@ -21,8 +21,8 @@ extension SuwayomiClient {
         guard let payload = data.fetchMangaAndChapters else {
             throw SuwayomiError.missingData
         }
-        let manga = Manga.from(payload.manga.fragments.mangaFields)
-        let chapters = payload.chapters.map { Chapter.from($0.fragments.chapterFields) }
+        let manga = Manga(payload.manga.fragments.mangaFields)
+        let chapters = payload.chapters.map { Chapter($0.fragments.chapterFields) }
         return (manga: manga, chapters: chapters)
     }
 
@@ -35,7 +35,7 @@ extension SuwayomiClient {
         guard let payload = data.updateManga else {
             throw SuwayomiError.missingData
         }
-        return Manga.from(payload.manga.fragments.mangaFields)
+        return Manga(payload.manga.fragments.mangaFields)
     }
 
     public func updateMangaCategories(
@@ -57,6 +57,6 @@ extension SuwayomiClient {
         guard let payload = data.updateMangaCategories else {
             throw SuwayomiError.missingData
         }
-        return Manga.from(payload.manga.fragments.mangaFields)
+        return Manga(payload.manga.fragments.mangaFields)
     }
 }

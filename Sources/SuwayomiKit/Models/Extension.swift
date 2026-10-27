@@ -1,7 +1,7 @@
 import API
 import Foundation
 
-public struct Extension: Sendable, Equatable, Identifiable, Codable {
+public struct Extension: Identifiable, Hashable, Sendable {
     public var id: String { pkgName }
     public let pkgName: String
     public let name: String
@@ -11,7 +11,7 @@ public struct Extension: Sendable, Equatable, Identifiable, Codable {
     public let isInstalled: Bool
     public let hasUpdate: Bool
     public let isObsolete: Bool
-    public let iconUrl: String
+    public let iconURL: String
     public let contentWarning: ContentWarning
 
     public init(
@@ -23,7 +23,7 @@ public struct Extension: Sendable, Equatable, Identifiable, Codable {
         isInstalled: Bool,
         hasUpdate: Bool,
         isObsolete: Bool,
-        iconUrl: String,
+        iconURL: String,
         contentWarning: ContentWarning
     ) {
         self.pkgName = pkgName
@@ -34,24 +34,20 @@ public struct Extension: Sendable, Equatable, Identifiable, Codable {
         self.isInstalled = isInstalled
         self.hasUpdate = hasUpdate
         self.isObsolete = isObsolete
-        self.iconUrl = iconUrl
+        self.iconURL = iconURL
         self.contentWarning = contentWarning
     }
-}
 
-extension Extension {
-    static func from(_ fragment: API.ExtensionFields) -> Extension {
-        Extension(
-            pkgName: fragment.pkgName,
-            name: fragment.name,
-            versionName: fragment.versionName,
-            versionCode: fragment.versionCodeLong,
-            lang: fragment.lang,
-            isInstalled: fragment.isInstalled,
-            hasUpdate: fragment.hasUpdate,
-            isObsolete: fragment.isObsolete,
-            iconUrl: fragment.iconUrl,
-            contentWarning: ContentWarning.from(fragment.contentWarning)
-        )
+    init(_ fragment: API.ExtensionFields) {
+        self.pkgName = fragment.pkgName
+        self.name = fragment.name
+        self.versionName = fragment.versionName
+        self.versionCode = fragment.versionCodeLong
+        self.lang = fragment.lang
+        self.isInstalled = fragment.isInstalled
+        self.hasUpdate = fragment.hasUpdate
+        self.isObsolete = fragment.isObsolete
+        self.iconURL = fragment.iconUrl
+        self.contentWarning = ContentWarning(fragment.contentWarning)
     }
 }

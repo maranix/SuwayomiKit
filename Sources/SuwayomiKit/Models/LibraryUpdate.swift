@@ -1,7 +1,6 @@
-import API
 import Foundation
 
-public struct LibraryJobsInfo: Sendable, Equatable, Codable {
+public struct LibraryJobsInfo: Hashable, Sendable {
     public let isRunning: Bool
     public let totalJobs: Int
     public let finishedJobs: Int
@@ -12,8 +11,8 @@ public struct LibraryJobsInfo: Sendable, Equatable, Codable {
         isRunning: Bool,
         totalJobs: Int,
         finishedJobs: Int,
-        skippedCategoriesCount: Int = 0,
-        skippedMangasCount: Int = 0
+        skippedCategoriesCount: Int,
+        skippedMangasCount: Int
     ) {
         self.isRunning = isRunning
         self.totalJobs = totalJobs

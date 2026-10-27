@@ -1,0 +1,8 @@
+fragment SourceSummaryFields on SourceType {
+  id
+  name
+  displayName
+  lang
+  iconUrl
+  supportsLatest
+}

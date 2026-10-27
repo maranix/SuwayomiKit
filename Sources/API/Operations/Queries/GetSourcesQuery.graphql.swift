@@ -8,8 +8,8 @@ nonisolated public struct GetSourcesQuery: GraphQLQuery {
   public static let operationName: String = "GetSources"
   public static let operationDocument: ApolloAPI.OperationDocument = .init(
     definition: .init(
-      #"query GetSources($condition: SourceConditionInput, $first: Int, $offset: Int) { sources(condition: $condition, first: $first, offset: $offset) { __typename nodes { __typename ...SourceFields } pageInfo { __typename ...PageInfoFields } totalCount } }"#,
-      fragments: [PageInfoFields.self, SourceFields.self]
+      #"query GetSources($condition: SourceConditionInput, $first: Int, $offset: Int) { sources(condition: $condition, first: $first, offset: $offset) { __typename nodes { __typename ...SourceSummaryFields } pageInfo { __typename ...PageInfoFields } totalCount } }"#,
+      fragments: [PageInfoFields.self, SourceSummaryFields.self]
     ))
 
   public var condition: GraphQLNullable<SourceConditionInput>
@@ -82,11 +82,11 @@ nonisolated public struct GetSourcesQuery: GraphQLQuery {
         @_spi(Execution) public static var __parentType: any ApolloAPI.ParentType { API.Objects.SourceType }
         @_spi(Execution) public static var __selections: [ApolloAPI.Selection] { [
           .field("__typename", String.self),
-          .fragment(SourceFields.self),
+          .fragment(SourceSummaryFields.self),
         ] }
         @_spi(Execution) public static var __fulfilledFragments: [any ApolloAPI.SelectionSet.Type] { [
           GetSourcesQuery.Data.Sources.Node.self,
-          SourceFields.self
+          SourceSummaryFields.self
         ] }
 
         public var id: API.LongString { __data["id"] }
@@ -94,16 +94,13 @@ nonisolated public struct GetSourcesQuery: GraphQLQuery {
         public var displayName: String { __data["displayName"] }
         public var lang: String { __data["lang"] }
         public var iconUrl: String { __data["iconUrl"] }
-        public var homeUrl: String? { __data["homeUrl"] }
         public var supportsLatest: Bool { __data["supportsLatest"] }
-        public var isConfigurable: Bool { __data["isConfigurable"] }
-        public var contentWarning: GraphQLEnum<API.ContentWarning> { __data["contentWarning"] }
 
         public struct Fragments: FragmentContainer {
           @_spi(Unsafe) public let __data: DataDict
           @_spi(Unsafe) public init(_dataDict: DataDict) { __data = _dataDict }
 
-          public var sourceFields: SourceFields { _toFragment() }
+          public var sourceSummaryFields: SourceSummaryFields { _toFragment() }
         }
       }
 

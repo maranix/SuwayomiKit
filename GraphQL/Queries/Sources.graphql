@@ -1,7 +1,7 @@
 query GetSources($condition: SourceConditionInput, $first: Int, $offset: Int) {
   sources(condition: $condition, first: $first, offset: $offset) {
     nodes {
-      ...SourceFields
+      ...SourceSummaryFields
     }
     pageInfo {
       ...PageInfoFields

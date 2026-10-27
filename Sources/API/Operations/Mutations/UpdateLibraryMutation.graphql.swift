@@ -8,7 +8,7 @@ nonisolated public struct UpdateLibraryMutation: GraphQLMutation {
   public static let operationName: String = "UpdateLibrary"
   public static let operationDocument: ApolloAPI.OperationDocument = .init(
     definition: .init(
-      #"mutation UpdateLibrary($input: UpdateLibraryInput!) { updateLibrary(input: $input) { __typename updateStatus { __typename jobsInfo { __typename isRunning totalJobs finishedJobs } } } }"#
+      #"mutation UpdateLibrary($input: UpdateLibraryInput!) { updateLibrary(input: $input) { __typename updateStatus { __typename jobsInfo { __typename isRunning totalJobs finishedJobs skippedCategoriesCount skippedMangasCount } } } }"#
     ))
 
   public var input: UpdateLibraryInput
@@ -82,6 +82,8 @@ nonisolated public struct UpdateLibraryMutation: GraphQLMutation {
             .field("isRunning", Bool.self),
             .field("totalJobs", Int.self),
             .field("finishedJobs", Int.self),
+            .field("skippedCategoriesCount", Int.self),
+            .field("skippedMangasCount", Int.self),
           ] }
           @_spi(Execution) public static var __fulfilledFragments: [any ApolloAPI.SelectionSet.Type] { [
             UpdateLibraryMutation.Data.UpdateLibrary.UpdateStatus.JobsInfo.self
@@ -90,6 +92,8 @@ nonisolated public struct UpdateLibraryMutation: GraphQLMutation {
           public var isRunning: Bool { __data["isRunning"] }
           public var totalJobs: Int { __data["totalJobs"] }
           public var finishedJobs: Int { __data["finishedJobs"] }
+          public var skippedCategoriesCount: Int { __data["skippedCategoriesCount"] }
+          public var skippedMangasCount: Int { __data["skippedMangasCount"] }
         }
       }
     }
